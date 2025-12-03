@@ -5,6 +5,7 @@ import com.jogogloria.engine.BotStrategy;
 public class Player implements Comparable<Player> {
     private final String id;
     private final String name;
+    private String initialPosition;
     private final boolean isBot;
     private final BotStrategy botStrategy;
 
@@ -36,6 +37,7 @@ public class Player implements Comparable<Player> {
     // --- Getters e Setters ---
     public String getId() { return id; }
     public String getName() { return name; }
+
     public boolean isBot() { return isBot; }
 
     public String getCurrentRoomId() { return currentRoomId; } // Renomeado para clareza
@@ -51,6 +53,8 @@ public class Player implements Comparable<Player> {
     public void setMovementPoints(int n) { movementPoints = n; }
     public void decrementMovementPoints() { if (movementPoints > 0) movementPoints--; }
 
+    public String getInitialPosition() { return initialPosition;}
+    public void setInitialPosition(String id) {this.initialPosition = id; }
     @Override
     public int compareTo(Player other) {
         // Ordenação por ID (útil para consistência de turnos)
