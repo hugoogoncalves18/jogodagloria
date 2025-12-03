@@ -1,5 +1,6 @@
 package com.jogogloria.gui;
 
+import com.example.Biblioteca.exceptions.EmptyCollectionException;
 import com.example.Biblioteca.exceptions.NoElementFoundException;
 import com.jogogloria.engine.GameEngine;
 import com.jogogloria.engine.RiddleManager;
@@ -55,7 +56,11 @@ public class GameWindow extends JFrame implements KeyListener {
         this.botTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                processBotTurn();
+                try {
+                    processBotTurn();
+                } catch (EmptyCollectionException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -85,7 +90,7 @@ public class GameWindow extends JFrame implements KeyListener {
         }
     }
 
-    private void processBotTurn() {
+    private void processBotTurn() throws EmptyCollectionException {
         if (!engine.isGameRunning()) {
             botTimer.stop();
             return;
@@ -153,13 +158,13 @@ public class GameWindow extends JFrame implements KeyListener {
         if (dx != 0 || dy != 0) {
             try {
                 moveHuman(current, dx, dy);
-            } catch (NoElementFoundException ex) {
+            } catch (NoElementFoundException | EmptyCollectionException ex) {
                 throw new RuntimeException(ex);
             }
         }
     }
 
-    private void moveHuman(Player p, int dx, int dy) throws NoElementFoundException {
+    private void moveHuman(Player p, int dx, int dy) throws NoElementFoundException, EmptyCollectionException {
         // Obter coordenadas da sala atual
         Room currentRoom = labyrinth.getRoom(p.getCurrentRoomId());
         if (currentRoom == null) return;
