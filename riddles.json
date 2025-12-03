@@ -1,0 +1,164 @@
+{
+	"riddles":{
+		{
+			"id":"R1",
+			"question":"Qual interface representa uma coleção que não permite elementos duplicados?",
+			"options":["List", "Set", "Queue", "Map"],
+			"correctAnswer": 2,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R2",
+			"question":"Qual implementação de List é mais eficiente para inserções e remoções no meio da lista?",
+			"options":["ArrayList", "Stack", "Vector", "LinkedList"],
+			"correctAnswer": 4,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R3",
+			"question":"Qual estrutura é baseada em chave–valor?",
+			"options":["ArrayList", "LinkedList", "HashMap", "HashSet"],
+			"correctAnswer": 3,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R4",
+			"question":"Qual classe garante ordenação natural dos elementos automaticamente?",
+			"options":["TreeSet", "HashSet", "LinkedHashSet", "ArrayList"],
+			"correctAnswer": 1,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R5",
+			"question":"Qual estrutura mantém a ordem de inserção?",
+			"options":["TreeSet", "HashSet", "LinkedHashSet", "PriorityQueue"],
+			"correctAnswer": 3,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R6",
+			"question":"Qual é a complexidade média de busca em um HashMap?",
+			"options":["O(1)", "O(log n)", "O(n)", "O(n log n"],
+			"correctAnswer": 1,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R7",
+			"question":"Qual dessas classes é thread-safe?",
+			"options":["ArrayList", "HashMap", "Vector", "LinkedList"],
+			"correctAnswer": 3,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R8",
+			"question":"Queue segue qual princípio?",
+			"options":["LIFO", "FILO", "Random", "FIFO"],
+			"correctAnswer": 4,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R9",
+			"question":"Qual classe implementa uma fila de prioridade?",
+			"options":["PriorityQueue", "ArrayDequeue", "LinkedList", "Vector"],
+			"correctAnswer": 1,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R10",
+			"question":"O que acontece ao adicionar um valor duplicado em um HashSet?",
+			"options":["É permitido", "Lança exceção", "Substitui o valor existente", "É ignorado"],
+			"correctAnswer": 4,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R11",
+			"question":"O método push() pertence a qual classe clássica de pilha?",
+			"options":["Array", "Queue", "Stack", "TreeSet"],
+			"correctAnswer": 3,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R12",
+			"question":"Qual estrutura mantém os elementos em ordem crescente?",
+			"options":["HashMap", "HashSet", "Stack", "TreeSet"],
+			"correctAnswer": 4,
+			"bonus": 1,
+			"penalty":1
+		},
+		},
+		{
+			"id":"R13",
+			"question":"Qual estrutura é ideal para acessar rapidamente um elemento pela sua posição?",
+			"options":["LinkedList", "Queue", "Stack", "ArrayList"],
+			"correctAnswer": 4,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R14",
+			"question":"LinkedList é implementada como:",
+			"options":["Lista encadeada", "Vetor dinâmico", "Árvore binária", "Tabela de hask"],
+			"correctAnswer": 1,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R15",
+			"question":"Qual classe oferece desempenho melhor para inserções no início da lista?",
+			"options":["ArrayList", "LinkedList", "ArrayDequeue", "HashMap"],
+			"correctAnswer": 2,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R16",
+			"question":"Qual dessas classes implementa a interface List?",
+			"options":["ArrayList", "LinkedQueue", "ArrayDequeue", "HashMap"],
+			"correctAnswer": 1,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R17",
+			"question":"Qual é a complexidade média de acesso direto a um elemento do ArrayList?",
+			"options":["O(n)", "O(log n)", "O(logn2)", "O(1)"],
+			"correctAnswer": 4,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R18",
+			"question":"Em uma LinkedList, acessar um elemento no meio custa:",
+			"options":["O(n)", "O(log n)", "O(logn2)", "O(1)"],
+			"correctAnswer": 1,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R19",
+			"question":"Qual método insere um elemento no topo da Stack?",
+			"options":["enqueue", "pull", "toString", "push"],
+			"correctAnswer": 4,
+			"bonus": 1,
+			"penalty":1
+		},
+		{
+			"id":"R20",
+			"question":"Qual método retorna o tamanho de uma ArrayList?",
+			"options":["count", "lenght", "size", "capacity"],
+			"correctAnswer": 3,
+			"bonus": 1,
+			"penalty":1
+		},
+}
