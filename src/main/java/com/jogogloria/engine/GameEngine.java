@@ -7,6 +7,7 @@ import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Player;
 import com.jogogloria.model.Room;
 import com.jogogloria.model.Corridor;
+import com.jogogloria.model.Penalty;
 
 import java.util.Iterator;
 
@@ -16,11 +17,15 @@ public class GameEngine {
     private final LinkedQueue<Player> turnQueue;
     private boolean gameRunning;
     private int playerSpawnIndex = 0;
+    private final PenaltyManager penaltyManager;
+    private final ArrayUnorderedList<Player> allPlayers;
 
     public GameEngine(Labyrinth labyrinth) {
         this.labyrinth = labyrinth;
         this.turnQueue = new LinkedQueue<>();
         this.gameRunning = true;
+        this.penaltyManager = new PenaltyManager();
+        this.allPlayers = new ArrayUnorderedList<>();
     }
 
     // --- Gestão de Jogadores ---
@@ -32,6 +37,7 @@ public class GameEngine {
             distributePlayerSpawn(player);
         }
         turnQueue.enqueue(player);
+        allPlayers.addToRear(player);
     }
 
     private void distributePlayerSpawn(Player player) {
@@ -45,6 +51,7 @@ public class GameEngine {
 
         if(spawmId != null) {
             player.move(spawmId);
+            player.setInitialPosition(spawmId);
             System.out.println("Spawn: " + player.getName() + "sala: " + spawmId);
         }
 
@@ -63,33 +70,49 @@ public class GameEngine {
     }
 
     /**
-     * Termina o turno do jogador atual e passa para o próximo.
-     * Coloca o jogador atual no fim da fila.
+     * Passa o turno. Roda a fila e processa penalidades de turno (skip)
+     * até encontrar um jogador que possa jogar.
      */
     public void nextTurn() {
         if (!gameRunning || turnQueue.isEmpty()) return;
 
+        // 1. O jogador que acabou de jogar (está na frente) vai para o fim da fila
         try {
-            Player current = turnQueue.dequeue();
+            Player finishedPlayer = turnQueue.dequeue();
+            turnQueue.enqueue(finishedPlayer);
+        } catch (EmptyCollectionException e) {
+            System.err.println("Erro crítico: Fila ficou vazia ao rodar turno.");
+            return;
+        }
 
-            // Lógica de "Perder a vez" (Penalidade)
-            if (current.getSkipTurns() > 0) {
-                current.decrementSkipTurn();
-                System.out.println(current.getName() + " perdeu a vez!");
-                turnQueue.enqueue(current); // Vai para o fim da fila
-                return; // O próximo jogador joga no próximo ciclo
+        // 2. Agora procuramos o próximo jogador válido (que não perdeu a vez)
+        // Usamos um ciclo para saltar automaticamente quem tem penalidades
+        while (true) {
+            try {
+                if (turnQueue.isEmpty()) break; // Segurança
+
+                // Espreitar quem é o próximo (está na frente da fila)
+                Player nextCandidate = turnQueue.first();
+
+                if (nextCandidate.getSkipTurns() > 0) {
+                    // Tem penalidade: decrementa e salta a vez dele
+                    nextCandidate.decrementSkipTurn();
+                    System.out.println(nextCandidate.getName() + " perdeu a vez! (Restam: " + nextCandidate.getSkipTurns() + ")");
+
+                    // Roda este jogador para o fim da fila imediatamente
+                    turnQueue.enqueue(turnQueue.dequeue());
+
+                    // O loop continua para testar o próximo candidato
+                } else {
+                    // Encontrámos um jogador válido! É a vez dele.
+                    // Paramos o loop e deixamo-lo na frente da fila para jogar.
+                    break;
+                }
+            } catch (EmptyCollectionException e) {
+                break;
             }
-
-            // Reseta pontos de movimento para o próximo turno (ex: rolar dado)
-            // Nota: Na UI, deves chamar setMovementPoints() com o valor do dado.
-
-            turnQueue.enqueue(current); // Volta para a fila
-
-        } catch (Exception e) {
-            System.err.println("Erro ao processar turno: " + e.getMessage());
         }
     }
-
     // --- Lógica de Movimento ---
 
     /**
@@ -97,12 +120,12 @@ public class GameEngine {
      * @param targetRoomId ID da sala de destino
      * @return true se o movimento foi válido e realizado
      */
-    public boolean tryMove(Player player, String targetRoomId) {
+    public boolean tryMove(Player player, String targetRoomId) throws EmptyCollectionException {
         if (!gameRunning) return false;
 
         String currentId = player.getCurrentRoomId();
 
-        // 1. Validar se são vizinhos (Usando o Grafo)
+        // 1. Validar Vizinhança
         boolean isNeighbor = false;
         ArrayUnorderedList<String> neighbors = labyrinth.getNeighbors(currentId);
         Iterator<String> it = neighbors.iterator();
@@ -118,7 +141,7 @@ public class GameEngine {
             return false;
         }
 
-        // 2. Validar Corredor (Se está trancado, etc)
+        // 2. Validar Corredor
         Corridor corridor = labyrinth.getCorridor(currentId, targetRoomId);
         if (corridor != null && corridor.isLocked()) {
             System.out.println("O corredor está trancado!");
@@ -129,13 +152,14 @@ public class GameEngine {
         player.move(targetRoomId);
         player.decrementMovementPoints();
 
-        // 4. Verificar Efeitos da Sala (Vitória ou Eventos)
-        checkRoomEffects(player, targetRoomId);
+        if (player.getMovementPoints() == 0 || targetRoomId.equals(labyrinth.getTreasureRoom())) {
+            checkRoomEffects(player, targetRoomId);
+        }
 
         return true;
     }
 
-    private void checkRoomEffects(Player player, String roomId) {
+    private void checkRoomEffects(Player player, String roomId) throws EmptyCollectionException {
         Room room = labyrinth.getRoom(roomId);
         if (room == null) return;
 
@@ -144,6 +168,10 @@ public class GameEngine {
             gameRunning = false;
             System.out.println("JOGO ACABOU! Vencedor: " + player.getName());
             // Aqui podes disparar um evento para a UI
+        }
+
+        if (room.getType() == Room.RoomType.PENALTY) {
+            handlePenaltyEvent(player);
         }
 
         // Outros tipos (Penalidade, Boost) seriam tratados aqui
@@ -162,7 +190,7 @@ public class GameEngine {
      * Executa a jogada do Bot automaticamente.
      * Deve ser chamado pela UI quando getCurrentPlayer().isBot() for true.
      */
-    public void executeBotTurn() {
+    public void executeBotTurn() throws EmptyCollectionException {
         Player bot = getCurrentPlayer();
 
         // Validações de segurança
@@ -199,4 +227,60 @@ public class GameEngine {
     }
 
     public boolean isGameRunning() { return gameRunning; }
+
+    private void graphMove(Player p, int steps) {
+        if (steps == 0) {
+            return;
+        }
+        if (steps == -99) {
+            String start = p.getInitialPosition();
+            if (start == null) {
+                start = labyrinth.getStartRoomId();
+            }
+            p.move(start);
+            System.out.println(p.getName() + " recuou até ao inicio");
+            return;
+        }
+
+        String targetId = (steps > 0) ? labyrinth.getTreasureRoom() : labyrinth.getStartRoomId();
+        int moves = Math.abs(steps);
+
+        java.util.Iterator<String> path = labyrinth.getShortestPath(p.getCurrentRoomId(), targetId);
+        if (path == null || !path.hasNext()) return;
+        path.next();
+
+        String nextRoom = null;
+        while (moves > 0 && path.hasNext()) {
+            nextRoom = path.next();
+            moves--;
+        }
+        if (nextRoom != null) {
+            p.move(nextRoom);
+            System.out.println("O jogador " + p.getName() + "moveu-se para a casa " + nextRoom);
+        }
+    }
+
+    private void handlePenaltyEvent(Player victim) throws EmptyCollectionException {
+        Penalty p = penaltyManager.getNextPenalty();
+        if (p == null) {
+            return;
+        }
+        System.out.println("Penalidade " + p.getDescription());
+
+        switch (p.getType()) {
+            case RETREAT:
+                graphMove(victim, p.getValue());
+                break;
+            case SKIP_TURN:
+                victim.setSkipTurns(p.getValue());
+                break;
+            case PLAYERS_BENEFITS:
+                for(Player other : allPlayers) {
+                    if (!other.getId().equals(victim.getId())) {
+                        graphMove(other, p.getValue());
+                    }
+                }
+                break;
+        }
+    }
 }
