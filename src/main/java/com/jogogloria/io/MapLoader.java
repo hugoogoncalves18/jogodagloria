@@ -1,7 +1,9 @@
 package com.jogogloria.io;
 
 import com.jogogloria.model.Labyrinth;
+import com.jogogloria.model.Lever;
 import com.jogogloria.model.Room;
+import com.jogogloria.model.Corridor;
 import com.jogogloria.model.Room.RoomType;
 
 import java.io.BufferedReader;
@@ -17,53 +19,50 @@ public class MapLoader {
     private static final int RIDDLE = 3;
     private static final int PENALTY = 4;
     private static final int BOOST = 5;
+    private static final int LEVER = 6;
     private static final int EXIT = 9;
 
-    /**
-     * Lê um ficheiro JSON e retorna o Labirinto.
-     */
     public static Labyrinth loadLabyrinth(String jsonFilePath) {
-        int[][] grid = parseJsonGrid(jsonFilePath);
-        return createLabyrinthFromGrid(grid);
+        String jsonContent = readJsonFile(jsonFilePath);
+
+        if (jsonContent.isEmpty()) {
+            System.err.println("Erro: Ficheiro JSON vazio ou não encontrado.");
+            return new Labyrinth();
+        }
+
+        int[][] grid = parseGridData(jsonContent);
+        Labyrinth labyrinth = createLabyrinthFromGrid(grid);
+
+        applyLocks(jsonContent, labyrinth);
+        applyLevers(jsonContent, labyrinth); // Carrega as alavancas
+
+        return labyrinth;
     }
 
-    /**
-     * Versão antiga (mantida para compatibilidade ou testes manuais)
-     */
-    public static Labyrinth loadLabyrinth(int[][] gridData) {
-        return createLabyrinthFromGrid(gridData);
-    }
-
-    // --- Parser Manual de JSON (Sem bibliotecas externas) ---
-    private static int[][] parseJsonGrid(String filePath) {
-        StringBuilder jsonContent = new StringBuilder();
-
+    private static String readJsonFile(String filePath) {
+        StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                jsonContent.append(line.trim());
+                content.append(line.trim());
             }
         } catch (IOException e) {
-            System.err.println("Erro ao ler ficheiro: " + e.getMessage());
+            System.err.println("Erro ao ler ficheiro mapa: " + e.getMessage());
+            return "";
+        }
+        return content.toString();
+    }
+
+    private static int[][] parseGridData(String jsonContent) {
+        int startIndex = jsonContent.indexOf("[[");
+        int endIndex = jsonContent.lastIndexOf("]]");
+
+        if (startIndex == -1 || endIndex == -1) {
+            System.err.println("Aviso: Matriz 'grid' não encontrada no JSON.");
             return new int[0][0];
         }
 
-        String content = jsonContent.toString();
-
-        // 1. Encontrar o início e fim da matriz: "grid": [ [ ... ] ]
-        // Procuramos o primeiro "[[" e o último "]]"
-        int startIndex = content.indexOf("[[");
-        int endIndex = content.lastIndexOf("]]");
-
-        if (startIndex == -1 || endIndex == -1) {
-            throw new RuntimeException("Formato JSON inválido: Matriz 'grid' não encontrada.");
-        }
-
-        // Conteúdo "bruto" da matriz: 1,2],[3,4
-        String rawMatrix = content.substring(startIndex + 2, endIndex); // Remove os [[ e ]] externos
-
-        // 2. Separar por linhas (usa "],[" ou "], [" como delimitador)
-        // O regex "],\s*\[" trata de "],[" com ou sem espaços
+        String rawMatrix = jsonContent.substring(startIndex + 2, endIndex);
         String[] rowsRaw = rawMatrix.split("\\],\\s*\\[");
 
         int rows = rowsRaw.length;
@@ -73,23 +72,99 @@ public class MapLoader {
         for (int i = 0; i < rows; i++) {
             String[] colsRaw = rowsRaw[i].split(",");
             for (int j = 0; j < colsRaw.length; j++) {
-                // Remove espaços e parseia
-                grid[i][j] = Integer.parseInt(colsRaw[j].trim());
+                try {
+                    grid[i][j] = Integer.parseInt(colsRaw[j].trim());
+                } catch (NumberFormatException e) {
+                    grid[i][j] = 0;
+                }
             }
         }
-
-        System.out.println("Mapa JSON carregado com sucesso: " + rows + "x" + cols);
+        System.out.println("Grelha carregada: " + rows + "x" + cols);
         return grid;
     }
 
-    // --- Lógica de Construção do Grafo (Refatorada para reutilização) ---
+    private static void applyLocks(String jsonContent, Labyrinth labyrinth) {
+        int keyIndex = jsonContent.indexOf("\"locked\"");
+        if (keyIndex == -1) return;
+
+        int startArr = jsonContent.indexOf("[", keyIndex);
+        int endArr = jsonContent.indexOf("]", startArr);
+
+        if (startArr == -1 || endArr == -1) return;
+
+        String lockedContent = jsonContent.substring(startArr + 1, endArr);
+        if (lockedContent.trim().isEmpty()) return;
+
+        String[] locks = lockedContent.split("},");
+
+        int count = 0;
+        for (String lockJson : locks) {
+            String roomA = extractValue(lockJson, "roomA");
+            String roomB = extractValue(lockJson, "roomB");
+
+            if (roomA != null && roomB != null) {
+                Corridor c = labyrinth.getCorridor(roomA, roomB);
+                if (c != null) {
+                    c.setLocked(true);
+                    count++;
+                }
+            }
+        }
+        System.out.println("Portas trancadas carregadas: " + count);
+    }
+
+    private static void applyLevers(String jsonContent, Labyrinth labyrinth) {
+        // CORREÇÃO: Procura por "levers" (minúsculas)
+        int keyIndex = jsonContent.indexOf("\"levers\"");
+        if (keyIndex == -1) return;
+
+        int startArr = jsonContent.indexOf("[", keyIndex);
+        int endArr = jsonContent.indexOf("]", startArr);
+        if (startArr == -1 || endArr == -1) return;
+
+        String content = jsonContent.substring(startArr + 1, endArr);
+        if (content.trim().isEmpty()) return;
+
+        // CORREÇÃO: Split por "}," para separar objetos
+        String[] items = content.split("},");
+
+        int count = 0;
+        for (String item : items) {
+            String roomId = extractValue(item, "roomId");
+            String id = extractValue(item, "id");
+            // CORREÇÃO: Usa as chaves do teu mapa.json (doorRoomA/doorRoomB)
+            String doorA = extractValue(item, "doorRoomA");
+            String doorB = extractValue(item, "doorRoomB");
+
+            if (roomId != null && doorA != null && doorB != null) {
+                Lever lever = new Lever(id != null ? id : "L" + count, doorA, doorB);
+                labyrinth.addLever(roomId, lever);
+                count++;
+            }
+        }
+        System.out.println("Alavancas carregadas: " + count);
+    }
+
+    private static String extractValue(String source, String key) {
+        String searchKey = "\"" + key + "\"";
+        int keyPos = source.indexOf(searchKey);
+        if (keyPos == -1) return null;
+
+        int startQuote = source.indexOf("\"", keyPos + searchKey.length() + 1);
+        int endQuote = source.indexOf("\"", startQuote + 1);
+
+        if (startQuote != -1 && endQuote != -1) {
+            return source.substring(startQuote + 1, endQuote);
+        }
+        return null;
+    }
+
     private static Labyrinth createLabyrinthFromGrid(int[][] gridData) {
         Labyrinth labyrinth = new Labyrinth();
         int rows = gridData.length;
         if (rows == 0) return labyrinth;
         int cols = gridData[0].length;
 
-        // 1. Criar Salas
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 int code = gridData[y][x];
@@ -97,8 +172,7 @@ public class MapLoader {
                     Room room = createRoom(x, y, code);
                     labyrinth.addRoom(room);
 
-                    // START (1) ponto de entrada válido
-                    if (code == START ) {
+                    if (code == START) {
                         labyrinth.addEntryPoint(room.getId());
                         labyrinth.setStartRoom(room.getId());
                     }
@@ -107,18 +181,15 @@ public class MapLoader {
             }
         }
 
-        // 2. Criar Corredores (Conectar Vizinhos)
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 if (labyrinth.getRoomAt(x, y) == null) continue;
                 String currentId = x + "-" + y;
 
-                // Conectar Norte
                 if (y > 0) {
                     String upId = x + "-" + (y - 1);
                     if (labyrinth.getRoom(upId) != null) labyrinth.addCorridor(currentId, upId);
                 }
-                // Conectar Oeste
                 if (x > 0) {
                     String leftId = (x - 1) + "-" + y;
                     if (labyrinth.getRoom(leftId) != null) labyrinth.addCorridor(currentId, leftId);
@@ -139,6 +210,7 @@ public class MapLoader {
             case RIDDLE:  type = RoomType.RIDDLE; label = "?"; break;
             case PENALTY: type = RoomType.PENALTY; label = "!"; break;
             case BOOST:   type = RoomType.BOOST; label = ">>"; break;
+            case LEVER:   type = RoomType.LEVER; label = "L"; break;
             default:      type = RoomType.NORMAL; label = ""; break;
         }
         return new Room(id, type, label);

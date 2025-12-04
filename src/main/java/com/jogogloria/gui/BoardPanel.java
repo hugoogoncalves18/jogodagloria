@@ -12,7 +12,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
-import java.util.Iterator; // Apenas para iterar as tuas listas personalizadas
+import java.util.Iterator;
 
 public class BoardPanel extends JPanel {
 
@@ -68,43 +68,67 @@ public class BoardPanel extends JPanel {
             g2.drawString(room.getLabel(), px + 15, py + 30);
         }
 
-        // --- C. Paredes (Verifica conexões no Grafo) ---
-        g2.setStroke(new BasicStroke(3)); // Linha grossa para paredes
-        g2.setColor(Color.DARK_GRAY);
-
+        // --- C. Paredes e Portas (Verifica conexões no Grafo) ---
         String currentId = room.getId();
 
         // Verificar parede à DIREITA
-        // Se estamos na borda ou não existe corredor para a direita -> Desenha Parede
         if (x + 1 < cols) {
             String rightId = (x + 1) + "-" + y;
             Corridor c = labyrinth.getCorridor(currentId, rightId);
+
+            int wallX = px + CELL_SIZE;
+
             if (c == null) {
-                g2.drawLine(px + CELL_SIZE, py, px + CELL_SIZE, py + CELL_SIZE);
+                // Não há corredor = Parede
+                drawWall(g2, wallX, py, wallX, py + CELL_SIZE);
             } else if (c.isLocked()) {
-                // Desenha uma "porta" vermelha se estiver trancado
-                g2.setColor(Color.RED);
-                g2.drawLine(px + CELL_SIZE, py, px + CELL_SIZE, py + CELL_SIZE);
-                g2.setColor(Color.DARK_GRAY); // Reseta
+                // Corredor existe mas está TRANCADO = Porta Laranja
+                drawLockedDoor(g2, wallX, py, wallX, py + CELL_SIZE);
             }
+            // Se c != null e !locked, não desenha nada (passagem livre)
         } else {
-            g2.drawLine(px + CELL_SIZE, py, px + CELL_SIZE, py + CELL_SIZE); // Borda do mapa
+            // Borda do mapa (Direita)
+            drawWall(g2, px + CELL_SIZE, py, px + CELL_SIZE, py + CELL_SIZE);
         }
 
         // Verificar parede ABAIXO
         if (y + 1 < rows) {
             String downId = x + "-" + (y + 1);
             Corridor c = labyrinth.getCorridor(currentId, downId);
+
+            int wallY = py + CELL_SIZE;
+
             if (c == null) {
-                g2.drawLine(px, py + CELL_SIZE, px + CELL_SIZE, py + CELL_SIZE);
+                drawWall(g2, px, wallY, px + CELL_SIZE, wallY);
             } else if (c.isLocked()) {
-                g2.setColor(Color.RED);
-                g2.drawLine(px, py + CELL_SIZE, px + CELL_SIZE, py + CELL_SIZE);
-                g2.setColor(Color.DARK_GRAY);
+                drawLockedDoor(g2, px, wallY, px + CELL_SIZE, wallY);
             }
         } else {
-            g2.drawLine(px, py + CELL_SIZE, px + CELL_SIZE, py + CELL_SIZE); // Borda do mapa
+            // Borda do mapa (Baixo)
+            drawWall(g2, px, py + CELL_SIZE, px + CELL_SIZE, py + CELL_SIZE);
         }
+    }
+
+    // --- Helpers de Desenho ---
+
+    private void drawWall(Graphics2D g2, int x1, int y1, int x2, int y2) {
+        g2.setColor(Color.DARK_GRAY);
+        g2.setStroke(new BasicStroke(3)); // Parede normal
+        g2.drawLine(x1, y1, x2, y2);
+    }
+
+    private void drawLockedDoor(Graphics2D g2, int x1, int y1, int x2, int y2) {
+        // 1. Desenha a "Porta" (Linha Grossa Laranja)
+        g2.setColor(new Color(200, 100, 0)); // Cor Laranja/Tijolo
+        g2.setStroke(new BasicStroke(6)); // Mais grosso que a parede para destacar
+        g2.drawLine(x1, y1, x2, y2);
+
+        // 2. Desenha a "Fechadura" (Pequeno círculo preto no meio)
+        g2.setColor(Color.BLACK);
+        int midX = (x1 + x2) / 2;
+        int midY = (y1 + y2) / 2;
+        int r = 4; // raio
+        g2.fillOval(midX - r, midY - r, r * 2, r * 2);
     }
 
     private void drawPlayers(Graphics2D g2) {
@@ -146,6 +170,7 @@ public class BoardPanel extends JPanel {
             case PENALTY: return new Color(255, 99, 71);   // Vermelho Tomate
             case BOOST:   return new Color(135, 206, 250); // Azul Céu
             case RIDDLE:  return new Color(221, 160, 221); // Roxo ameixa
+            case LEVER:   return new Color(192, 192, 192); // Cinzento Prata (Alavanca)
             default:      return Color.WHITE;
         }
     }

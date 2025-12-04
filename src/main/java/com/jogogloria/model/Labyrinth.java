@@ -5,6 +5,7 @@ import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.exceptions.EmptyCollectionException;
 import com.jogogloria.utils.SimpleMap; // Assumindo que existe
 import java.util.Iterator;
+import com.jogogloria.model.Lever;
 
 public class Labyrinth {
     // Grafo principal: Vértices = IDs das Salas, Arestas = Corredores
@@ -13,6 +14,7 @@ public class Labyrinth {
     // Mapas para acesso rápido O(1) aos objetos de dados
     private final SimpleMap<String, Room> roomMap;
     private final SimpleMap<String, Corridor> corridorMap;
+    private final SimpleMap<String, Lever> leverMap;
 
     private final ArrayUnorderedList<String> entryPoints;
     private String startRoomId;
@@ -23,6 +25,7 @@ public class Labyrinth {
         this.roomMap = new SimpleMap<>();
         this.corridorMap = new SimpleMap<>();
         this.entryPoints = new ArrayUnorderedList<>();
+        this.leverMap = new SimpleMap<>();
     }
 
     /**
@@ -52,6 +55,14 @@ public class Labyrinth {
         String canonicalKey = getCanonicalCorridorKey(idA, idB);
         Corridor corridor = new Corridor(canonicalKey, idA, idB);
         corridorMap.put(canonicalKey, corridor);
+    }
+
+    public void addLever(String roomId, Lever lever) {
+        leverMap.put(roomId, lever);
+    }
+
+    public Lever getLever(String roomId) {
+        return leverMap.get(roomId);
     }
 
     /**

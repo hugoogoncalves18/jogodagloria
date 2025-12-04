@@ -8,6 +8,7 @@ import com.jogogloria.model.Player;
 import com.jogogloria.model.Room;
 import com.jogogloria.model.Corridor;
 import com.jogogloria.model.Penalty;
+import com.jogogloria.model.Room.RoomType; // Importante para o switch
 
 import java.util.Iterator;
 
@@ -19,6 +20,7 @@ public class GameEngine {
     private int playerSpawnIndex = 0;
     private final PenaltyManager penaltyManager;
     private final ArrayUnorderedList<Player> allPlayers;
+    private final LeverManager leverManager;
 
     public GameEngine(Labyrinth labyrinth) {
         this.labyrinth = labyrinth;
@@ -26,6 +28,7 @@ public class GameEngine {
         this.gameRunning = true;
         this.penaltyManager = new PenaltyManager();
         this.allPlayers = new ArrayUnorderedList<>();
+        this.leverManager = new LeverManager();
     }
 
     // --- Gestão de Jogadores ---
@@ -33,7 +36,6 @@ public class GameEngine {
     public void addPlayer(Player player) throws EmptyCollectionException {
         // Define a posição inicial se ainda não tiver
         if (player.getCurrentRoomId() == null) {
-            // Pega o primeiro ponto de entrada disponível (pode ser melhorado)
             distributePlayerSpawn(player);
         }
         turnQueue.enqueue(player);
@@ -47,12 +49,13 @@ public class GameEngine {
 
         int totalEntries = entries.size();
         int targetIndex = playerSpawnIndex % totalEntries;
-        String spawmId = entries.get(targetIndex);
+        String spawnId = entries.get(targetIndex);
 
-        if(spawmId != null) {
-            player.move(spawmId);
-            player.setInitialPosition(spawmId);
-            System.out.println("Spawn: " + player.getName() + "sala: " + spawmId);
+        if(spawnId != null) {
+            player.move(spawnId);
+            // Certifica-te que adicionaste este método setInitialPosition na classe Player!
+            player.setInitialPosition(spawnId);
+            System.out.println("Spawn: " + player.getName() + " sala: " + spawnId);
         }
 
         playerSpawnIndex++;
@@ -86,26 +89,19 @@ public class GameEngine {
         }
 
         // 2. Agora procuramos o próximo jogador válido (que não perdeu a vez)
-        // Usamos um ciclo para saltar automaticamente quem tem penalidades
         while (true) {
             try {
-                if (turnQueue.isEmpty()) break; // Segurança
+                if (turnQueue.isEmpty()) break;
 
-                // Espreitar quem é o próximo (está na frente da fila)
                 Player nextCandidate = turnQueue.first();
 
                 if (nextCandidate.getSkipTurns() > 0) {
-                    // Tem penalidade: decrementa e salta a vez dele
                     nextCandidate.decrementSkipTurn();
                     System.out.println(nextCandidate.getName() + " perdeu a vez! (Restam: " + nextCandidate.getSkipTurns() + ")");
-
                     // Roda este jogador para o fim da fila imediatamente
                     turnQueue.enqueue(turnQueue.dequeue());
-
-                    // O loop continua para testar o próximo candidato
                 } else {
-                    // Encontrámos um jogador válido! É a vez dele.
-                    // Paramos o loop e deixamo-lo na frente da fila para jogar.
+                    // Encontrámos um jogador válido!
                     break;
                 }
             } catch (EmptyCollectionException e) {
@@ -113,13 +109,9 @@ public class GameEngine {
             }
         }
     }
+
     // --- Lógica de Movimento ---
 
-    /**
-     * Tenta mover o jogador atual para uma sala vizinha.
-     * @param targetRoomId ID da sala de destino
-     * @return true se o movimento foi válido e realizado
-     */
     public boolean tryMove(Player player, String targetRoomId) throws EmptyCollectionException {
         if (!gameRunning) return false;
 
@@ -152,6 +144,7 @@ public class GameEngine {
         player.move(targetRoomId);
         player.decrementMovementPoints();
 
+        // Só verifica efeitos se parou na casa ou chegou ao tesouro
         if (player.getMovementPoints() == 0 || targetRoomId.equals(labyrinth.getTreasureRoom())) {
             checkRoomEffects(player, targetRoomId);
         }
@@ -163,110 +156,101 @@ public class GameEngine {
         Room room = labyrinth.getRoom(roomId);
         if (room == null) return;
 
-        // Verifica Vitória
+        // Vitória
         if (roomId.equals(labyrinth.getTreasureRoom())) {
             gameRunning = false;
             System.out.println("JOGO ACABOU! Vencedor: " + player.getName());
-            // Aqui podes disparar um evento para a UI
+            return;
         }
 
-        if (room.getType() == Room.RoomType.PENALTY) {
-            handlePenaltyEvent(player);
-        }
-
-        // Outros tipos (Penalidade, Boost) seriam tratados aqui
+        // Verifica o tipo de sala
         switch (room.getType()) {
             case PENALTY:
-                player.setSkipTurns(1);
-                System.out.println("Penalidade! Perdes o próximo turno.");
+                handlePenaltyEvent(player);
                 break;
-            // Adicionar outros cases conforme necessário
+            case LEVER:
+                leverManager.checkLever(player, roomId, labyrinth);
+                break;
+            case BOOST:
+                System.out.println("Boost! (Lógica por implementar)");
+                break;
+            // O caso RIDDLE deve ser tratado na UI (GameWindow) ou aqui se tiveres lógica automática
         }
     }
 
     // --- Lógica de Bots ---
 
-    /**
-     * Executa a jogada do Bot automaticamente.
-     * Deve ser chamado pela UI quando getCurrentPlayer().isBot() for true.
-     */
     public void executeBotTurn() throws EmptyCollectionException {
         Player bot = getCurrentPlayer();
 
-        // Validações de segurança
         if (bot == null || !bot.isBot()) return;
         if (!gameRunning) return;
 
-        // Se o bot não tiver estratégia ou movimentos, passa a vez
         if (bot.getBotStrategy() == null || bot.getMovementPoints() <= 0) {
-            // O loop de jogo principal tratará de passar o turno se os pontos acabarem
             return;
         }
 
-        // Pede à estratégia o próximo passo
         String targetRoomId = bot.getBotStrategy().nextMove(
                 labyrinth,
                 bot,
                 bot.getMovementPoints()
         );
 
-        // Se a estratégia devolveu um destino válido, tenta mover
         if (targetRoomId != null) {
             boolean moved = tryMove(bot, targetRoomId);
-
             if (moved) {
                 System.out.println("Bot " + bot.getName() + " moveu-se para " + targetRoomId);
-                // Se ainda tiver pontos, pode tentar mover-se novamente no próximo ciclo do loop de jogo
-                // ou podes chamar recursivamente se quiseres movimento instantâneo:
-                // if (bot.getMovementPoints() > 0) executeBotTurn();
             }
         } else {
-            // Estratégia não encontrou caminho (ex: bloqueado), perde os pontos restantes
             bot.setMovementPoints(0);
         }
     }
 
     public boolean isGameRunning() { return gameRunning; }
 
+    // --- Lógica de Penalidades ---
+
     private void graphMove(Player p, int steps) {
-        if (steps == 0) {
-            return;
-        }
+        if (steps == 0) return;
+
+        // Caso especial: Voltar ao Início
         if (steps == -99) {
-            String start = p.getInitialPosition();
+            String start = p.getInitialPosition(); // Garante que este método existe em Player
             if (start == null) {
-                start = labyrinth.getStartRoomId();
+                start = labyrinth.getStartRoomId(); // Fallback
             }
             p.move(start);
-            System.out.println(p.getName() + " recuou até ao inicio");
+            System.out.println(p.getName() + " recuou até ao início!");
             return;
         }
 
+        // Define alvo: Positivo = Tesouro, Negativo = Início
         String targetId = (steps > 0) ? labyrinth.getTreasureRoom() : labyrinth.getStartRoomId();
         int moves = Math.abs(steps);
 
-        java.util.Iterator<String> path = labyrinth.getShortestPath(p.getCurrentRoomId(), targetId);
+        Iterator<String> path = labyrinth.getShortestPath(p.getCurrentRoomId(), targetId);
         if (path == null || !path.hasNext()) return;
-        path.next();
+        path.next(); // Ignora a sala atual
 
         String nextRoom = null;
         while (moves > 0 && path.hasNext()) {
             nextRoom = path.next();
             moves--;
         }
+
         if (nextRoom != null) {
             p.move(nextRoom);
-            System.out.println("O jogador " + p.getName() + "moveu-se para a casa " + nextRoom);
+            System.out.println("O jogador " + p.getName() + " foi forçado a mover-se para " + nextRoom);
         }
     }
 
     private void handlePenaltyEvent(Player victim) throws EmptyCollectionException {
         Penalty p = penaltyManager.getNextPenalty();
-        if (p == null) {
-            return;
-        }
-        System.out.println("Penalidade " + p.getDescription());
+        if (p == null) return;
 
+        System.out.println("PENALIDADE: " + p.getDescription());
+
+        // Usa os Enums definidos na classe Penalty
         switch (p.getType()) {
             case RETREAT:
                 graphMove(victim, p.getValue());
