@@ -4,7 +4,7 @@ import com.example.Biblioteca.Graphs.AdjListGraph;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.exceptions.EmptyCollectionException;
 import com.jogogloria.utils.SimpleMap; // Assumindo que existe
-import java.util.Iterator;
+import com.example.Biblioteca.iterators.Iterator;
 import com.jogogloria.model.Lever;
 
 public class Labyrinth {

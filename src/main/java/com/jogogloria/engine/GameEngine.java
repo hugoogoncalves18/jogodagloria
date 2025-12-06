@@ -3,6 +3,7 @@ package com.jogogloria.engine;
 import com.example.Biblioteca.exceptions.EmptyCollectionException;
 import com.example.Biblioteca.queues.LinkedQueue;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
+import com.example.Biblioteca.iterators.Iterator;
 import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Player;
 import com.jogogloria.model.Room;
@@ -10,7 +11,6 @@ import com.jogogloria.model.Corridor;
 import com.jogogloria.model.Penalty;
 import com.jogogloria.model.Room.RoomType; // Importante para o switch
 
-import java.util.Iterator;
 
 public class GameEngine {
 
@@ -259,7 +259,9 @@ public class GameEngine {
                 victim.setSkipTurns(p.getValue());
                 break;
             case PLAYERS_BENEFITS:
-                for(Player other : allPlayers) {
+                Iterator<Player> it = allPlayers.iterator();
+                while (it.hasNext()) {
+                    Player other = it.next();
                     if (!other.getId().equals(victim.getId())) {
                         graphMove(other, p.getValue());
                     }

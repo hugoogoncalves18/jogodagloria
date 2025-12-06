@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="Biblioteca">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/src/main/java/com/jogogloria/utils/Biblioteca_jar/Biblioteca.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Biblioteca.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

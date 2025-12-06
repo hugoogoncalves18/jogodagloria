@@ -5,22 +5,13 @@ import com.jogogloria.model.Lever;
 import com.jogogloria.model.Room;
 import com.jogogloria.model.Corridor;
 import com.jogogloria.model.Room.RoomType;
+import com.jogogloria.config.GameConfig;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class MapLoader {
-
-    // Códigos da Matriz
-    private static final int EMPTY = 0;
-    private static final int START = 1;
-    private static final int NORMAL = 2;
-    private static final int RIDDLE = 3;
-    private static final int PENALTY = 4;
-    private static final int BOOST = 5;
-    private static final int LEVER = 6;
-    private static final int EXIT = 9;
 
     public static Labyrinth loadLabyrinth(String jsonFilePath) {
         String jsonContent = readJsonFile(jsonFilePath);
@@ -168,15 +159,15 @@ public class MapLoader {
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 int code = gridData[y][x];
-                if (code != EMPTY) {
+                if (code != GameConfig.CODE_EMPTY) {
                     Room room = createRoom(x, y, code);
                     labyrinth.addRoom(room);
 
-                    if (code == START) {
+                    if (code == GameConfig.CODE_START) {
                         labyrinth.addEntryPoint(room.getId());
                         labyrinth.setStartRoom(room.getId());
                     }
-                    if (code == EXIT) labyrinth.setTreasureRoom(room.getId());
+                    if (code == GameConfig.CODE_EXIT) labyrinth.setTreasureRoom(room.getId());
                 }
             }
         }
@@ -205,12 +196,12 @@ public class MapLoader {
         String label = "";
 
         switch (code) {
-            case START:   type = RoomType.START; label = "S"; break;
-            case EXIT:    type = RoomType.EXIT; label = "Fim"; break;
-            case RIDDLE:  type = RoomType.RIDDLE; label = "?"; break;
-            case PENALTY: type = RoomType.PENALTY; label = "!"; break;
-            case BOOST:   type = RoomType.BOOST; label = ">>"; break;
-            case LEVER:   type = RoomType.LEVER; label = "L"; break;
+            case GameConfig.CODE_START:   type = RoomType.START; label = ""; break;
+            case GameConfig.CODE_EXIT:    type = RoomType.EXIT; label = ""; break;
+            case GameConfig.CODE_RIDDLE:  type = RoomType.RIDDLE; label = ""; break;
+            case GameConfig.CODE_PENALTY: type = RoomType.PENALTY; label = ""; break;
+            case GameConfig.CODE_BOOST:   type = RoomType.BOOST; label = ""; break;
+            case GameConfig.CODE_LEVER:   type = RoomType.LEVER; label = ""; break;
             default:      type = RoomType.NORMAL; label = ""; break;
         }
         return new Room(id, type, label);

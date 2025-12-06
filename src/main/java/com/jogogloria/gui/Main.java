@@ -1,5 +1,6 @@
 package com.jogogloria.gui;
 
+import com.jogogloria.config.GameConfig;
 import com.jogogloria.engine.GameEngine;
 import com.jogogloria.io.MapLoader;
 import com.jogogloria.engine.ShortestPathBot;
@@ -30,7 +31,7 @@ public class Main {
             try {
                 // 1. Carregar Mapa
                 System.out.println("A carregar mapa...");
-                Labyrinth labyrinth = MapLoader.loadLabyrinth("mapa.json");
+                Labyrinth labyrinth = MapLoader.loadLabyrinth(GameConfig.MAP_FILE);
 
                 // 2. Inicializar Motor
                 GameEngine engine = new GameEngine(labyrinth);
@@ -58,8 +59,6 @@ public class Main {
                 }
 
                 // 5. Configurar Janela de Jogo
-                // Nota: Podes ajustar rows/cols se souberes o tamanho do mapa,
-                // ou deixar fixo se o JSON for sempre o mesmo tamanho.
                 GameWindow window = new GameWindow(labyrinth, engine, allPlayers, 15, 15);
                 window.setVisible(true);
 

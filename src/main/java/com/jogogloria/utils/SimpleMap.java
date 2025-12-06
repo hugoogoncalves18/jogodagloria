@@ -1,11 +1,10 @@
 package com.jogogloria.utils;
 
 import com.example.Biblioteca.lists.ArrayUnorderedList; // Import necessário
-import java.util.Iterator;
+import com.example.Biblioteca.iterators.Iterator;
 
 public class SimpleMap<K, V> {
 
-    // Adicionei esta classe interna que estava em falta
     private static class Entry<K, V> implements Comparable<Entry<K, V>> {
         K key;
         V value;

@@ -2,6 +2,7 @@ package com.jogogloria.gui;
 
 import com.example.Biblioteca.exceptions.EmptyCollectionException;
 import com.example.Biblioteca.exceptions.NoElementFoundException;
+import com.jogogloria.config.GameConfig;
 import com.jogogloria.engine.GameEngine;
 import com.jogogloria.engine.RiddleManager;
 import com.jogogloria.model.Labyrinth;
@@ -53,7 +54,7 @@ public class GameWindow extends JFrame implements KeyListener {
         setLocationRelativeTo(null); // Centraliza no ecrã
 
         // 4. Timer do Bot (Joga a cada 1 segundo se for a vez dele)
-        this.botTimer = new Timer(1000, new ActionListener() {
+        this.botTimer = new Timer(GameConfig.BOT_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -65,7 +66,7 @@ public class GameWindow extends JFrame implements KeyListener {
         });
 
         updateStatus();
-        this.riddleManager = new RiddleManager("riddles.json");
+        this.riddleManager = new RiddleManager(GameConfig.RIDDLES_FILE);
     }
 
     // --- Lógica de Turnos ---

@@ -2,7 +2,7 @@ package com.jogogloria.engine;
 
 import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Player;
-import java.util.Iterator;
+import com.example.Biblioteca.iterators.Iterator;
 
 public class ShortestPathBot implements BotStrategy {
 
