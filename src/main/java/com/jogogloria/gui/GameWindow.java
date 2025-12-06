@@ -10,7 +10,6 @@ import com.jogogloria.model.Player;
 import com.jogogloria.model.Room;
 import com.jogogloria.model.Riddle;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
-
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -25,8 +24,6 @@ public class GameWindow extends JFrame implements KeyListener {
     private final BoardPanel boardPanel;
     private final JLabel statusLabel;
     private final RiddleManager riddleManager;
-
-    // Timer para o Bot não jogar instantaneamente (dá tempo de ver)
     private final Timer botTimer;
 
     public GameWindow(Labyrinth labyrinth, GameEngine engine, ArrayUnorderedList<Player> allPlayers, int rows, int cols) {
@@ -37,23 +34,19 @@ public class GameWindow extends JFrame implements KeyListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // 1. Painel do Tabuleiro (Centro)
         this.boardPanel = new BoardPanel(labyrinth, allPlayers, rows, cols);
         add(boardPanel, BorderLayout.CENTER);
 
-        // 2. Painel de Status (Rodapé)
         this.statusLabel = new JLabel("Bem-vindo! Prime ENTER para começar.");
         this.statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
         this.statusLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(statusLabel, BorderLayout.SOUTH);
 
-        // 3. Configuração de Input
         addKeyListener(this);
         setFocusable(true);
-        pack(); // Ajusta o tamanho da janela ao conteúdo
-        setLocationRelativeTo(null); // Centraliza no ecrã
+        pack();
+        setLocationRelativeTo(null);
 
-        // 4. Timer do Bot (Joga a cada 1 segundo se for a vez dele)
         this.botTimer = new Timer(GameConfig.BOT_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -82,7 +75,6 @@ public class GameWindow extends JFrame implements KeyListener {
             statusLabel.setText("Turno de: " + current.getName() +
                     " | Movimentos: " + current.getMovementPoints());
 
-            // Se for Bot, ativa o timer. Se for Humano, para o timer e espera teclado.
             if (current.isBot()) {
                 if (!botTimer.isRunning()) botTimer.start();
             } else {
@@ -100,9 +92,8 @@ public class GameWindow extends JFrame implements KeyListener {
         Player current = engine.getCurrentPlayer();
         if (current != null && current.isBot()) {
 
-            // Rola o dado "automaticamente" para o bot se tiver 0 pontos
             if (current.getMovementPoints() <= 0) {
-                int dice = (int)(Math.random() * 6) + 1; // Simulação simples
+                int dice = (int)(Math.random() * 6) + 1;
                 current.setMovementPoints(dice);
                 System.out.println("Bot rolou: " + dice);
             }
@@ -110,7 +101,6 @@ public class GameWindow extends JFrame implements KeyListener {
             engine.executeBotTurn();
             boardPanel.repaint();
 
-            // Se acabou os pontos, passa a vez
             if (current.getMovementPoints() <= 0) {
                 engine.nextTurn();
             }
@@ -126,10 +116,8 @@ public class GameWindow extends JFrame implements KeyListener {
 
         Player current = engine.getCurrentPlayer();
 
-        // Se for a vez do Bot, ignora o teclado
         if (current == null || current.isBot()) return;
 
-        // Se o jogador não tiver pontos, precisa rolar o dado (Simulado com ESPAÇO)
         if (current.getMovementPoints() <= 0) {
             if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                 int dice = (int)(Math.random() * 6) + 1;
@@ -150,7 +138,6 @@ public class GameWindow extends JFrame implements KeyListener {
             case KeyEvent.VK_LEFT:  dx = -1; break;
             case KeyEvent.VK_RIGHT: dx = 1; break;
             case KeyEvent.VK_ENTER:
-                // Debug: Pular turno
                 engine.nextTurn();
                 updateStatus();
                 return;
@@ -166,15 +153,12 @@ public class GameWindow extends JFrame implements KeyListener {
     }
 
     private void moveHuman(Player p, int dx, int dy) throws NoElementFoundException, EmptyCollectionException {
-        // Obter coordenadas da sala atual
         Room currentRoom = labyrinth.getRoom(p.getCurrentRoomId());
         if (currentRoom == null) return;
 
-        // Calcular alvo
         int targetX = currentRoom.getX() + dx;
         int targetY = currentRoom.getY() + dy;
 
-        // Obter sala alvo pela coordenada visual
         Room targetRoom = labyrinth.getRoomAt(targetX, targetY);
 
         if (targetRoom != null) {
@@ -182,11 +166,9 @@ public class GameWindow extends JFrame implements KeyListener {
             if (success) {
                 boardPanel.repaint();
 
-                // Se acabaram os pontos, passa a vez automaticamente
                 if (p.getMovementPoints() <= 0) {
                     engine.nextTurn();
                 }
-                // Verifica se caiu um enigma
                 if (targetRoom.getType() == Room.RoomType.RIDDLE) {
                     handleRiddleEvent(p);
                 }
@@ -204,29 +186,28 @@ public class GameWindow extends JFrame implements KeyListener {
             JOptionPane.showMessageDialog(this, "A sala de enigmas está vazia");
             return;
         }
-        // Mostrar Popup para o Humano
+
         if (!player.isBot()) {
-            String resposta = JOptionPane.showInputDialog(this,
-                    "ENIGMA:\n" + riddle.getQuestion(),
-                    "Responde Sabiamente",
-                    JOptionPane.QUESTION_MESSAGE);
+            String resposta = JOptionPane.showInputDialog(this, "ENIGMA:\n" + riddle.getQuestion(), "Responde Sabiamente", JOptionPane.QUESTION_MESSAGE);
 
             if (resposta != null && resposta.equalsIgnoreCase(riddle.getAnswer())) {
+                int bonus = riddle.getBonus();
                 JOptionPane.showMessageDialog(this, "Correto! Ganhaste um movimento extra.");
-                player.setMovementPoints(player.getMovementPoints() + 1); // Exemplo de prémio
+                player.setMovementPoints(player.getMovementPoints() + bonus); // Exemplo de prémio
             } else {
+                int penalty = riddle.getPenalty();
                 JOptionPane.showMessageDialog(this, "Errado! A resposta era: " + riddle.getAnswer() + "\nPerdes o resto do turno.");
-                player.setMovementPoints(0); // Penalidade
+                player.setMovementPoints(player.getMovementPoints() - penalty);
             }
         }
         else {
-            // Lógica para BOT (Simulada: 50% chance de acertar)
             boolean acertou = Math.random() > 0.5;
             if (acertou) {
                 System.out.println("Bot " + player.getName() + " acertou o enigma!");
                 player.setMovementPoints(player.getMovementPoints() + 1);
             } else {
                 System.out.println("Bot " + player.getName() + " errou o enigma.");
+                player.setSkipTurns(player.getSkipTurns() + riddle.getPenalty());
                 player.setMovementPoints(0);
             }
         }

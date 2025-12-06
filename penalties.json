@@ -1,0 +1,32 @@
+[
+  {
+    "description": "Azar! Recua 1 casa",
+    "type": "RETREAT",
+    "value": -1
+  },
+  {
+    "description": "Azar! Recua 2 casas",
+    "type": "RETREAT",
+    "value": -2
+  },
+  {
+    "description": "O chão cedeu! Voltas ao início.",
+    "type": "RETREAT",
+    "value": -99
+  },
+  {
+    "description": "Ficaste preso na teia. Passa a vez.",
+    "type": "SKIP_TURN",
+    "value": 1
+  },
+  {
+    "description": "Encontraste um atalho para todos! Outros avançam 1 casa.",
+    "type": "PLAYERS_BENEFITS",
+    "value": 1
+  },
+  {
+    "description": "Vento mágico! Outros avançam 2 casas.",
+    "type": "PLAYERS_BENEFITS",
+    "value": 2
+  }
+]

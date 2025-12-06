@@ -5,6 +5,7 @@ public class GameConfig {
     //Ficheiros e recursos
     public static final String MAP_FILE = "mapa.json";
     public static final String RIDDLES_FILE = "riddles.json";
+    public static final String PENALTIES_FILE = "penalties.json";
     public static final String IMG_FOLDER = "resources/";
     public static final String IMG_FLOOR = "floor.png";
     public static final String IMG_WALL = "wall.png";
@@ -12,9 +13,9 @@ public class GameConfig {
     public static final String IMG_PLAYER = "player.png";
     public static final String IMG_RIDDLE = "riddle.png";
     public static final String IMG_LEVER = "lever.png";
-    public static final String IMG_START = "floor.png";
-    public static final String IMG_PENALTY = "floor.png";
-    public static final String IMG_BOOST = "floor.png";
+    public static final String IMG_START = "start.png";
+    public static final String IMG_PENALTY = "penalty.png";
+    public static final String IMG_BOOST = "boost.png";
 
     //caso falhe a imagem
     public static final Color COLOR_START = new Color(144, 238, 144);

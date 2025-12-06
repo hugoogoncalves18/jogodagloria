@@ -16,6 +16,7 @@ import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
+
 public class BoardPanel extends JPanel {
 
     private final Labyrinth labyrinth;
@@ -30,10 +31,8 @@ public class BoardPanel extends JPanel {
         this.rows = rows;
         this.cols = cols;
 
-        // Inicializa o gestor de imagens
         this.imageManager = new ImageManager();
 
-        // Usa o tamanho definido na Config
         int width = cols * GameConfig.CELL_SIZE;
         int height = rows * GameConfig.CELL_SIZE;
         setPreferredSize(new Dimension(width, height));
@@ -45,7 +44,7 @@ public class BoardPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // 1. Desenhar as Salas e Corredores
+        // 1. Desenhar as Salas
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 drawCell(g2d, x, y);
@@ -58,40 +57,29 @@ public class BoardPanel extends JPanel {
 
     private void drawCell(Graphics2D g2, int x, int y) {
         Room room = labyrinth.getRoomAt(x, y);
-        if (room == null) return; // Espaço vazio
+        if (room == null) return;
 
         int px = x * GameConfig.CELL_SIZE;
         int py = y * GameConfig.CELL_SIZE;
         int size = GameConfig.CELL_SIZE;
 
         // --- 1. Desenhar Imagem de Fundo ---
-        String typeKey = room.getType().toString(); // Ex: "NORMAL", "EXIT"
+        String typeKey = room.getType().toString();
         BufferedImage img = imageManager.getImage(typeKey);
 
         if (img != null) {
-            // Desenha a imagem redimensionada
             g2.drawImage(img, px, py, size, size, null);
-
-            // Filtro de cor para tipos especiais que usam a mesma imagem base
-            if (room.getType() == Room.RoomType.START ||
-                    room.getType() == Room.RoomType.PENALTY ||
-                    room.getType() == Room.RoomType.BOOST) {
-
-                g2.setColor(getOverlayColor(room.getType()));
-                g2.fillRect(px, py, size, size);
-            }
         } else {
-            // Fallback para cor sólida se não houver imagem
-            g2.setColor(getRoomColor(room.getType()));
-            g2.fillRect(px, py, size, size);
+            // Se a imagem falhar, desenha um quadrado preto/vazio para não crashar
+            g2.setColor(Color.DARK_GRAY);
+            g2.drawRect(px, py, size, size);
         }
 
-        // --- 2. Label ---
-        g2.setColor(Color.BLACK);
+        // --- 2. Label (S, F, ?, !) ---
         if (room.getLabel() != null && !room.getLabel().isEmpty()) {
+            g2.setColor(Color.BLACK);
             g2.setFont(g2.getFont().deriveFont(java.awt.Font.BOLD, 14f));
-            // Centra o texto
-            g2.drawString(room.getLabel(), px + (size/2) - 5, py + (size/2) + 5);
+            g2.drawString(room.getLabel(), px + (size / 2) - 5, py + (size / 2) + 5);
         }
 
         // --- 3. Paredes e Portas ---
@@ -106,14 +94,11 @@ public class BoardPanel extends JPanel {
             int wallX = px + size;
 
             if (c == null) {
-                // Não há corredor = Parede
                 drawWall(g2, wallX, py, wallX, py + size);
             } else if (c.isLocked()) {
-                // Corredor trancado = Porta
                 drawLockedDoor(g2, wallX, py, wallX, py + size);
             }
         } else {
-            // Borda do mapa
             drawWall(g2, px + size, py, px + size, py + size);
         }
 
@@ -129,20 +114,19 @@ public class BoardPanel extends JPanel {
                 drawLockedDoor(g2, px, wallY, px + size, wallY);
             }
         } else {
-            // Borda do mapa
             drawWall(g2, px, py + size, px + size, py + size);
         }
     }
 
     private void drawWall(Graphics2D g2, int x1, int y1, int x2, int y2) {
-        g2.setColor(new Color(50, 50, 50)); // Cinza Escuro
+        g2.setColor(new Color(50, 50, 50));
         g2.setStroke(new BasicStroke(4));
         g2.drawLine(x1, y1, x2, y2);
     }
 
     private void drawLockedDoor(Graphics2D g2, int x1, int y1, int x2, int y2) {
-        g2.setColor(new Color(200, 100, 0)); // Laranja/Tijolo
-        g2.setStroke(new BasicStroke(8));    // Mais grosso
+        g2.setColor(new Color(200, 100, 0)); // Laranja (Porta)
+        g2.setStroke(new BasicStroke(8));
         g2.drawLine(x1, y1, x2, y2);
 
         // Fechadura
@@ -157,7 +141,6 @@ public class BoardPanel extends JPanel {
         int offset = 0;
         int size = GameConfig.CELL_SIZE;
 
-        // Tenta buscar a imagem do jogador
         BufferedImage playerImg = imageManager.getImage("PLAYER");
 
         while (it.hasNext()) {
@@ -170,52 +153,20 @@ public class BoardPanel extends JPanel {
                 int pSize = size - 20;
 
                 if (playerImg != null) {
-                    // Desenha Sprite
                     g2.drawImage(playerImg, px, py, pSize, pSize, null);
-
-                    // Anel colorido para identificar equipa/bot
-                    //g2.setColor(p.isBot() ? Color.BLUE : Color.MAGENTA);
-                    //g2.setStroke(new BasicStroke(2));
-                    //g2.drawOval(px, py, pSize, pSize);
                 } else {
-                    // Fallback (Círculo)
+                    // Fallback simples se a imagem do jogador falhar
                     g2.setColor(p.isBot() ? Color.BLUE : Color.MAGENTA);
                     g2.fillOval(px, py, pSize, pSize);
-
-                    g2.setColor(Color.WHITE);
-                    g2.setStroke(new BasicStroke(1));
-                    g2.drawOval(px, py, pSize, pSize);
                 }
 
-                // Nome (Inicial)
+                // Nome do Jogador
                 g2.setColor(Color.WHITE);
                 g2.setFont(g2.getFont().deriveFont(10f));
-                g2.drawString(p.getName().substring(0, 1), px + pSize/2 - 3, py - 2);
+                g2.drawString(p.getName().substring(0, 1), px + pSize / 2 - 3, py - 2);
 
-                offset = (offset + 5) % 15; // Evita sobreposição total
+                offset = (offset + 5) % 15;
             }
-        }
-    }
-
-    // Cores de overlay semitransparentes
-    private Color getOverlayColor(Room.RoomType type) {
-        switch (type) {
-            case START:   return new Color(0, 255, 0, 100);   // Verde
-            case PENALTY: return new Color(255, 0, 0, 100);   // Vermelho
-            case BOOST:   return new Color(0, 0, 255, 100);   // Azul
-            default:      return new Color(0, 0, 0, 0);
-        }
-    }
-
-    private Color getRoomColor(Room.RoomType type) {
-        switch (type) {
-            case START:   return GameConfig.COLOR_START;
-            case EXIT:    return GameConfig.COLOR_EXIT;
-            case PENALTY: return GameConfig.COLOR_PENALTY;
-            case BOOST:   return GameConfig.COLOR_BOOST;
-            case RIDDLE:  return GameConfig.COLOR_RIDDLE;
-            case LEVER:   return GameConfig.COLOR_LEVER;
-            default:      return GameConfig.COLOR_NORMAL;
         }
     }
 }

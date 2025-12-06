@@ -1,5 +1,5 @@
 {
-	"riddles":{
+	"riddles":[
 		{
 			"id":"R1",
 			"question":"Qual interface representa uma coleção que não permite elementos duplicados?",
@@ -96,7 +96,6 @@
 			"bonus": 1,
 			"penalty":1
 		},
-		},
 		{
 			"id":"R13",
 			"question":"Qual estrutura é ideal para acessar rapidamente um elemento pela sua posição?",
@@ -160,5 +159,6 @@
 			"correctAnswer": 3,
 			"bonus": 1,
 			"penalty":1
-		},
+		}
+      ]
 }

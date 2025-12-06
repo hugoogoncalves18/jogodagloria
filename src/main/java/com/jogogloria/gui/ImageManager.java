@@ -26,6 +26,7 @@ public class ImageManager {
         loadImage("START", GameConfig.IMG_START);
         loadImage("PENALTY", GameConfig.IMG_PENALTY);
         loadImage("BOOST", GameConfig.IMG_BOOST);
+        loadImage("WALL", GameConfig.IMG_WALL);
 
         // Carregar Jogador
         loadImage("PLAYER", GameConfig.IMG_PLAYER);
