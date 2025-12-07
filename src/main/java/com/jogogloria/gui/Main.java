@@ -52,7 +52,7 @@ public class Main {
                     allPlayers.addToRear(bot);
                 }
 
-                GameWindow window = new GameWindow(labyrinth, engine, allPlayers, 15, 15);
+                GameWindow window = new GameWindow(labyrinth, engine, allPlayers, 20, 20);
                 window.setVisible(true);
 
                 System.out.println("Jogo iniciado: " + numHumans + " Humanos, " + numBots + " Bots.");

@@ -8,10 +8,10 @@ public class Player implements Comparable<Player> {
     private String initialPosition;
     private final boolean isBot;
     private final BotStrategy botStrategy;
-
     private String currentRoomId;
     private int skipTurns = 0;
     private int movementPoints = 0;
+    private int boost = 0;
 
     // Construtor para Humano
     public Player(String id, String name) {
@@ -55,6 +55,20 @@ public class Player implements Comparable<Player> {
 
     public String getInitialPosition() { return initialPosition;}
     public void setInitialPosition(String id) {this.initialPosition = id; }
+
+    public int getBoost() {
+        return boost;
+    }
+
+    public void addBoost() {
+        this.boost++;
+    }
+
+    public void decrementBoost() {
+        if (boost > 0)
+            boost--;
+    }
+
     @Override
     public int compareTo(Player other) {
         // Ordenação por ID (útil para consistência de turnos)

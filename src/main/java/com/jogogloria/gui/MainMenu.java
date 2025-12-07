@@ -20,7 +20,7 @@ public class MainMenu extends JFrame {
         panel.setLayout(new GridLayout(3, 1, 10, 10)); // 3 Linhas, espaçamento de 10px
 
         // 1. Título
-        JLabel titleLabel = new JLabel("LABIRINTO TÁTICO", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("JOGO DA GLÓRIA", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         panel.add(titleLabel);
 
@@ -36,7 +36,7 @@ public class MainMenu extends JFrame {
         panel.add(btnSingle);
 
         // 3. Botão Multiplayer
-        JButton btnMulti = new JButton("Multiplayer (Local)");
+        JButton btnMulti = new JButton("Multiplayer");
         btnMulti.setFont(new Font("Arial", Font.PLAIN, 16));
         btnMulti.addActionListener(new ActionListener() {
             @Override

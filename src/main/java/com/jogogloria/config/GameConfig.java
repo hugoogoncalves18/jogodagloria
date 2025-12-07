@@ -28,7 +28,7 @@ public class GameConfig {
 
     //Interface
     public static final String GAME_TITLE = "Jogo da glória";
-    public static final int CELL_SIZE = 40;
+    public static final int CELL_SIZE = 30;
 
     //Codigos do mapa JSON
     public static final int CODE_EMPTY = 0;

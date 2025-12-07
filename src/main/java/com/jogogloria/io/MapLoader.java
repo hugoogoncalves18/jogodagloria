@@ -5,7 +5,6 @@ import com.jogogloria.model.Lever;
 import com.jogogloria.model.Room;
 import com.jogogloria.model.Corridor;
 import com.jogogloria.model.Room.RoomType;
-import com.jogogloria.config.GameConfig;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,11 +12,19 @@ import java.io.IOException;
 
 public class MapLoader {
 
+    private static final int EMPTY = 0;
+    private static final int START = 1;
+    private static final int NORMAL = 2;
+    private static final int RIDDLE = 3;
+    private static final int PENALTY = 4;
+    private static final int BOOST = 5;
+    private static final int LEVER = 6;
+    private static final int EXIT = 9;
+
     public static Labyrinth loadLabyrinth(String jsonFilePath) {
         String jsonContent = readJsonFile(jsonFilePath);
-
         if (jsonContent.isEmpty()) {
-            System.err.println("Erro: Ficheiro JSON vazio ou não encontrado.");
+            System.err.println("Erro: Ficheiro JSON vazio.");
             return new Labyrinth();
         }
 
@@ -25,7 +32,7 @@ public class MapLoader {
         Labyrinth labyrinth = createLabyrinthFromGrid(grid);
 
         applyLocks(jsonContent, labyrinth);
-        applyLevers(jsonContent, labyrinth); // Carrega as alavancas
+        applyLevers(jsonContent, labyrinth);
 
         return labyrinth;
     }
@@ -34,11 +41,9 @@ public class MapLoader {
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
-            while ((line = br.readLine()) != null) {
-                content.append(line.trim());
-            }
+            while ((line = br.readLine()) != null) content.append(line.trim());
         } catch (IOException e) {
-            System.err.println("Erro ao ler ficheiro mapa: " + e.getMessage());
+            System.err.println("Erro ao ler mapa: " + e.getMessage());
             return "";
         }
         return content.toString();
@@ -48,10 +53,7 @@ public class MapLoader {
         int startIndex = jsonContent.indexOf("[[");
         int endIndex = jsonContent.lastIndexOf("]]");
 
-        if (startIndex == -1 || endIndex == -1) {
-            System.err.println("Aviso: Matriz 'grid' não encontrada no JSON.");
-            return new int[0][0];
-        }
+        if (startIndex == -1 || endIndex == -1) return new int[0][0];
 
         String rawMatrix = jsonContent.substring(startIndex + 2, endIndex);
         String[] rowsRaw = rawMatrix.split("\\],\\s*\\[");
@@ -80,18 +82,17 @@ public class MapLoader {
 
         int startArr = jsonContent.indexOf("[", keyIndex);
         int endArr = jsonContent.indexOf("]", startArr);
-
         if (startArr == -1 || endArr == -1) return;
 
-        String lockedContent = jsonContent.substring(startArr + 1, endArr);
-        if (lockedContent.trim().isEmpty()) return;
+        String content = jsonContent.substring(startArr + 1, endArr);
+        if (content.trim().isEmpty()) return;
 
-        String[] locks = lockedContent.split("},");
+        String[] locks = content.split("},");
 
         int count = 0;
-        for (String lockJson : locks) {
-            String roomA = extractValue(lockJson, "roomA");
-            String roomB = extractValue(lockJson, "roomB");
+        for (String item : locks) {
+            String roomA = extractValue(item, "roomA");
+            String roomB = extractValue(item, "roomB");
 
             if (roomA != null && roomB != null) {
                 Corridor c = labyrinth.getCorridor(roomA, roomB);
@@ -101,11 +102,11 @@ public class MapLoader {
                 }
             }
         }
-        System.out.println("Portas trancadas carregadas: " + count);
+        System.out.println("Portas trancadas: " + count);
     }
 
     private static void applyLevers(String jsonContent, Labyrinth labyrinth) {
-        // CORREÇÃO: Procura por "levers" (minúsculas)
+        // Usa "levers" em minúsculas (conforme o teu JSON)
         int keyIndex = jsonContent.indexOf("\"levers\"");
         if (keyIndex == -1) return;
 
@@ -116,14 +117,13 @@ public class MapLoader {
         String content = jsonContent.substring(startArr + 1, endArr);
         if (content.trim().isEmpty()) return;
 
-        // CORREÇÃO: Split por "}," para separar objetos
+        // Split correto por objetos
         String[] items = content.split("},");
 
         int count = 0;
         for (String item : items) {
             String roomId = extractValue(item, "roomId");
             String id = extractValue(item, "id");
-            // CORREÇÃO: Usa as chaves do teu mapa.json (doorRoomA/doorRoomB)
             String doorA = extractValue(item, "doorRoomA");
             String doorB = extractValue(item, "doorRoomB");
 
@@ -137,15 +137,25 @@ public class MapLoader {
     }
 
     private static String extractValue(String source, String key) {
-        String searchKey = "\"" + key + "\"";
-        int keyPos = source.indexOf(searchKey);
-        if (keyPos == -1) return null;
+        String searchKey = "\"" + key + "\":";
+        int start = source.indexOf(searchKey);
+        if (start == -1) return null;
 
-        int startQuote = source.indexOf("\"", keyPos + searchKey.length() + 1);
-        int endQuote = source.indexOf("\"", startQuote + 1);
+        start += searchKey.length();
+        int firstQuote = source.indexOf("\"", start);
+        if (firstQuote != -1 && firstQuote < start + 5) {
+            int secondQuote = source.indexOf("\"", firstQuote + 1);
+            if (secondQuote != -1) return source.substring(firstQuote + 1, secondQuote);
+        } else {
+            // Lógica para números
+            int comma = source.indexOf(",", start);
+            int brace = source.indexOf("}", start);
+            int end = -1;
+            if (comma == -1) end = brace;
+            else if (brace == -1) end = comma;
+            else end = Math.min(comma, brace);
 
-        if (startQuote != -1 && endQuote != -1) {
-            return source.substring(startQuote + 1, endQuote);
+            if (end != -1) return source.substring(start, end).trim();
         }
         return null;
     }
@@ -159,15 +169,14 @@ public class MapLoader {
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 int code = gridData[y][x];
-                if (code != GameConfig.CODE_EMPTY) {
+                if (code != EMPTY) {
                     Room room = createRoom(x, y, code);
                     labyrinth.addRoom(room);
-
-                    if (code == GameConfig.CODE_START) {
+                    if (code == START) {
                         labyrinth.addEntryPoint(room.getId());
                         labyrinth.setStartRoom(room.getId());
                     }
-                    if (code == GameConfig.CODE_EXIT) labyrinth.setTreasureRoom(room.getId());
+                    if (code == EXIT) labyrinth.setTreasureRoom(room.getId());
                 }
             }
         }
@@ -176,7 +185,6 @@ public class MapLoader {
             for (int x = 0; x < cols; x++) {
                 if (labyrinth.getRoomAt(x, y) == null) continue;
                 String currentId = x + "-" + y;
-
                 if (y > 0) {
                     String upId = x + "-" + (y - 1);
                     if (labyrinth.getRoom(upId) != null) labyrinth.addCorridor(currentId, upId);
@@ -194,14 +202,13 @@ public class MapLoader {
         String id = x + "-" + y;
         RoomType type;
         String label = "";
-
         switch (code) {
-            case GameConfig.CODE_START:   type = RoomType.START; label = ""; break;
-            case GameConfig.CODE_EXIT:    type = RoomType.EXIT; label = ""; break;
-            case GameConfig.CODE_RIDDLE:  type = RoomType.RIDDLE; label = ""; break;
-            case GameConfig.CODE_PENALTY: type = RoomType.PENALTY; label = ""; break;
-            case GameConfig.CODE_BOOST:   type = RoomType.BOOST; label = ""; break;
-            case GameConfig.CODE_LEVER:   type = RoomType.LEVER; label = ""; break;
+            case START:   type = RoomType.START; label = ""; break;
+            case EXIT:    type = RoomType.EXIT; label = ""; break;
+            case RIDDLE:  type = RoomType.RIDDLE; label = ""; break;
+            case PENALTY: type = RoomType.PENALTY; label = ""; break;
+            case BOOST:   type = RoomType.BOOST; label = ""; break;
+            case LEVER:   type = RoomType.LEVER; label = ""; break;
             default:      type = RoomType.NORMAL; label = ""; break;
         }
         return new Room(id, type, label);
