@@ -2,13 +2,16 @@ package com.jogogloria.gui;
 
 import com.example.Biblioteca.exceptions.NoElementFoundException;
 import com.example.Biblioteca.exceptions.EmptyCollectionException;
+import com.example.Biblioteca.lists.ArrayUnorderedList;
+import com.example.Biblioteca.lists.ArrayOrderedList;
+import com.example.Biblioteca.iterators.Iterator;
+
+import com.jogogloria.config.GameConfig;
 import com.jogogloria.engine.GameEngine;
 import com.jogogloria.engine.RiddleManager;
-import com.jogogloria.model.Labyrinth;
-import com.jogogloria.model.Player;
-import com.jogogloria.model.Room;
-import com.jogogloria.model.Riddle;
-import com.example.Biblioteca.lists.ArrayUnorderedList;
+import com.jogogloria.io.MapLoader;
+import com.jogogloria.model.*;
+
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -25,12 +28,18 @@ public class GameWindow extends JFrame implements KeyListener {
     private final JLabel statusLabel;
     private final RiddleManager riddleManager;
     private final Timer botTimer;
+    private final ArrayUnorderedList<Player> allPlayers;
+    private final int rows;
+    private final int cols;
 
     public GameWindow(Labyrinth labyrinth, GameEngine engine, ArrayUnorderedList<Player> allPlayers, int rows, int cols) {
         this.labyrinth = labyrinth;
         this.engine = engine;
+        this.allPlayers = allPlayers;
+        this.rows = rows;
+        this.cols = cols;
 
-        setTitle("Jogo da Glória - Labirinto Tático");
+        setTitle(GameConfig.GAME_TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -63,6 +72,8 @@ public class GameWindow extends JFrame implements KeyListener {
     private void updateStatus() {
         if (!engine.isGameRunning()) {
             statusLabel.setText("JOGO TERMINADO!");
+            botTimer.stop();
+            handleGameOver();
             return;
         }
 
@@ -249,6 +260,74 @@ public class GameWindow extends JFrame implements KeyListener {
                 player.setSkipTurns(player.getSkipTurns() + riddle.getPenalty());
                 player.setMovementPoints(0);
             }
+        }
+    }
+
+    public void handleGameOver() {
+        Player winner = null;
+        Iterator<Player> it = allPlayers.iterator();
+        while (it.hasNext()) {
+            Player p = it.next();
+            if (p.getCurrentRoomId().equals(labyrinth.getTreasureRoom())) {
+                winner = p;
+                break;
+            }
+        }
+        if (winner != null) {
+            winner.incrementWins();
+        }
+
+        ArrayOrderedList<PlayerScore> ranking = new ArrayOrderedList<>();
+        it = allPlayers.iterator();
+        while (it.hasNext()) {
+            Player p = it.next();
+            ranking.add(new PlayerScore(p));
+        }
+
+        StringBuilder score = new StringBuilder();
+        score.append("Vencedor: ").append(winner != null ? winner.getName() : "Ninguém").append("\n\n");
+        score.append("--- CLASSIFICAÇÃO GERAL ---\n");
+
+        Iterator<PlayerScore> rankIt = ranking.iterator();
+        int pos = 1;
+        while (rankIt.hasNext()) {
+            PlayerScore ps = rankIt.next();
+            score.append(pos).append("º - ").append(ps.toString()).append("\n");
+            pos++;
+        }
+
+        String[] options = {"Jogar novamente", "Menu", "Sair"};
+        int choice = JOptionPane.showOptionDialog(this, score.toString(), "Fim", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+
+        if (choice == 0) {
+            restartGame();
+        } else if (choice == 1) {
+            this.dispose();
+            new MainMenu().setVisible(true);
+        } else {
+            System.exit(0);
+        }
+    }
+
+    private void restartGame() {
+        this.dispose();
+
+        try{
+            Labyrinth labyrint = MapLoader.loadLabyrinth(GameConfig.MAP_FILE);
+
+            GameEngine engine = new GameEngine(labyrinth);
+
+            Iterator<Player> it = allPlayers.iterator();
+            while (it.hasNext()) {
+                Player p = it.next();
+                p.resetForNewMatch();
+                engine.addPlayer(p);
+            }
+            GameWindow window = new GameWindow(labyrinth, engine, allPlayers, rows, cols);
+            window.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro ao reiniciar: " + e.getMessage());
         }
     }
 

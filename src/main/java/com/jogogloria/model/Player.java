@@ -1,10 +1,12 @@
 package com.jogogloria.model;
 
 import com.jogogloria.engine.BotStrategy;
+import com.jogogloria.engine.GameEngine;
 
 public class Player implements Comparable<Player> {
     private final String id;
     private final String name;
+    private int wins = 0;
     private String initialPosition;
     private final boolean isBot;
     private final BotStrategy botStrategy;
@@ -69,6 +71,14 @@ public class Player implements Comparable<Player> {
             boost--;
     }
 
+    public int getWins() {
+        return wins;
+    }
+
+    public void incrementWins() {
+        this.wins++;
+    }
+
     @Override
     public int compareTo(Player other) {
         // Ordenação por ID (útil para consistência de turnos)
@@ -78,5 +88,16 @@ public class Player implements Comparable<Player> {
     @Override
     public String toString() {
         return name + " (" + currentRoomId + ")";
+    }
+
+    public void resetForNewMatch() {
+        this.movementPoints = 0;
+        this.skipTurns = 0;
+        this.boost = 0;
+        if (initialPosition != null) {
+            this.currentRoomId = initialPosition;
+        } else {
+            this.currentRoomId = null;
+        }
     }
 }
