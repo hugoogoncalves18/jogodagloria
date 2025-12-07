@@ -4,12 +4,12 @@ import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.iterators.Iterator;
 
 public class Riddle implements Comparable<Riddle> {
-    private String id;
-    private String question;
-    private String answer;
-    private ArrayUnorderedList<String> options;
-    private int bonus;
-    private int penalty;
+    private final String id;
+    private final String question;
+    private final String answer;
+    private final ArrayUnorderedList<String> options;
+    private final int bonus;
+    private final int penalty;
 
     public Riddle(String id, String question, String answer, ArrayUnorderedList<String> options, int bonus, int penalty ) {
         this.id = id;
@@ -18,6 +18,22 @@ public class Riddle implements Comparable<Riddle> {
         this.options = options;
         this.bonus = bonus;
         this.penalty = penalty;
+    }
+
+    public boolean checkAnswer(String input) {
+        if (input == null) return false;
+        String cleanInput = input.trim();
+        if (cleanInput.equalsIgnoreCase(answer)) return true;
+        try {
+            int index = Integer.parseInt(cleanInput);
+            int listIndex = index - 1;
+            if (options != null && listIndex >= 0 && listIndex < options.size()) {
+                String selectedOption = options.get(listIndex);
+                return selectedOption.equalsIgnoreCase(answer);
+            }
+        } catch (NumberFormatException e) {}
+
+        return false;
     }
 
     public String getQuestion() {

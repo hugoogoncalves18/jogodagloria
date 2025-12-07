@@ -199,8 +199,6 @@ public class GameWindow extends JFrame implements KeyListener {
                 }
                 updateStatus();
             } else {
-                // Se bateu na parede, não faz nada (ou avisa)
-                // statusLabel.setText("Caminho bloqueado!");
             }
         }
     }
@@ -219,7 +217,7 @@ public class GameWindow extends JFrame implements KeyListener {
                     "Responde Sabiamente",
                     JOptionPane.QUESTION_MESSAGE);
 
-            if (resposta != null && resposta.equalsIgnoreCase(riddle.getAnswer())) {
+            if (riddle.checkAnswer(resposta)) {
                 int bonus = riddle.getBonus();
                 JOptionPane.showMessageDialog(this, "Correto! Avanças " + bonus + " casas.");
 
