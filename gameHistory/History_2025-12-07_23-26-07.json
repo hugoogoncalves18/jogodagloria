@@ -1,0 +1,77 @@
+{
+  "timestamp": "2025-12-07T23:26:07.357153800",
+  "vencedor": "Jogador 1",
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "tipo": "HUMAN",
+      "vitorias": 1,
+      "historico": [
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 1-0"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-0"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-1"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-2"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 3-2"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 4-2"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 4-3"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 4-4"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 5-4"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 6-4"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 6-5"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 6-6"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 5-6"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 4-6"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 4-7"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 4-8"},
+        {"turn": 7, "type": "PENALTY", "description": "Vento mágico! Outros avançam 2 casas."},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 4-9"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 5-9"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 6-9"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 6-8"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 7-8"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 8-8"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 9-8"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 9-9"}
+      ]
+    },
+    {
+      "nome": "Jogador 2",
+      "tipo": "HUMAN",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 18-0"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 17-0"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 18-0"},
+        {"turn": 8, "type": "MOVE", "description": "Moveu-se para: 17-0"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 18-0"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 17-0"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 18-0"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 17-0"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 18-0"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 17-0"}
+      ]
+    },
+    {
+      "nome": "Jogador 3",
+      "tipo": "HUMAN",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 0-18"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 0-17"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 0-16"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 0-15"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 0-14"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 1-14"},
+        {"turn": 7, "type": "AUTO_MOVE", "description": "Movimento para: 3-14"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 4-14"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 5-14"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 6-14"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 6-13"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 7-13"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 8-13"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 8-14"},
+        {"turn": 15, "type": "PENALTY", "description": "Ficaste preso na teia. Passa a vez."}
+      ]
+    }
+  ]
+}

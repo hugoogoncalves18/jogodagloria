@@ -1,0 +1,46 @@
+{
+  "timestamp": "2025-12-07T23:30:29.414216700",
+  "vencedor": "Jogador 1",
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "tipo": "HUMAN",
+      "vitorias": 1,
+      "historico": [
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 1-0"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-0"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-1"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 2-2"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 3-2"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 4-2"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 4-1"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 4-0"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 5-0"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 6-0"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 7-0"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 7-1"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 7-2"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 8-2"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 9-2"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 9-3"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 9-4"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 9-5"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 9-6"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 10-6"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 10-7"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 10-8"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 9-8"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 10-8"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 10-9"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 9-9"}
+      ]
+    },
+    {
+      "nome": "Bot 1",
+      "tipo": "BOT",
+      "vitorias": 0,
+      "historico": [
+      ]
+    }
+  ]
+}

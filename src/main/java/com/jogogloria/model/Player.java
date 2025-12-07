@@ -2,6 +2,7 @@ package com.jogogloria.model;
 
 import com.jogogloria.engine.BotStrategy;
 import com.jogogloria.engine.GameEngine;
+import com.example.Biblioteca.lists.ArrayUnorderedList;
 
 public class Player implements Comparable<Player> {
     private final String id;
@@ -14,6 +15,7 @@ public class Player implements Comparable<Player> {
     private int skipTurns = 0;
     private int movementPoints = 0;
     private int boost = 0;
+    private ArrayUnorderedList<GameEvent> logs;
 
     // Construtor para Humano
     public Player(String id, String name) {
@@ -21,6 +23,7 @@ public class Player implements Comparable<Player> {
         this.name = name;
         this.isBot = false;
         this.botStrategy = null;
+        this.logs = new ArrayUnorderedList<>();
     }
 
     // Construtor para Bot
@@ -29,6 +32,7 @@ public class Player implements Comparable<Player> {
         this.name = name;
         this.isBot = true;
         this.botStrategy = strategy;
+        this.logs = new ArrayUnorderedList<>();
     }
 
     // --- Lógica de Movimento ---
@@ -79,15 +83,13 @@ public class Player implements Comparable<Player> {
         this.wins++;
     }
 
-    @Override
-    public int compareTo(Player other) {
-        // Ordenação por ID (útil para consistência de turnos)
-        return this.id.compareTo(other.id);
+    //logs
+    public void logEvent(int turn, String type, String description) {
+        logs.addToRear(new GameEvent(turn, type, description));
     }
 
-    @Override
-    public String toString() {
-        return name + " (" + currentRoomId + ")";
+    public ArrayUnorderedList<GameEvent> getLogs() {
+        return logs;
     }
 
     public void resetForNewMatch() {
@@ -99,5 +101,17 @@ public class Player implements Comparable<Player> {
         } else {
             this.currentRoomId = null;
         }
+        this.logs = new ArrayUnorderedList<>();
+    }
+
+    @Override
+    public int compareTo(Player other) {
+        // Ordenação por ID (útil para consistência de turnos)
+        return this.id.compareTo(other.id);
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + currentRoomId + ")";
     }
 }

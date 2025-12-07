@@ -20,6 +20,7 @@ public class GameEngine {
     private final ArrayUnorderedList<Player> allPlayers; // Lista de todos os jogadores
     private boolean gameRunning;
     private int playerSpawnIndex = 0;
+    private int countTurn = 1;
 
     // Gestores
     private final PenaltyManager penaltyManager;
@@ -106,6 +107,7 @@ public class GameEngine {
                 break;
             }
         }
+        countTurn++;
     }
 
     // --- Lógica de Movimento ---
@@ -140,6 +142,7 @@ public class GameEngine {
 
         // 3. Executar Movimento
         player.move(targetRoomId);
+        player.logEvent(countTurn, "MOVE", "Moveu-se para: " + targetRoomId);
         player.decrementMovementPoints();
 
         // Verificar efeitos ao parar ou ganhar
@@ -166,6 +169,7 @@ public class GameEngine {
                 break;
             case LEVER:
                 leverManager.checkLever(player, roomId, labyrinth);
+                player.logEvent(countTurn, "LEVER", "Ativou a alavanca no: " + roomId);
                 break;
             case BOOST:
                 handleBoostEvent(player);
@@ -187,7 +191,7 @@ public class GameEngine {
     private void handlePenaltyEvent(Player victim) throws EmptyCollectionException {
         Penalty p = penaltyManager.getNextPenalty();
         if (p == null) return;
-
+        victim.logEvent(countTurn, "PENALTY", p.getDescription());
         System.out.println("PENALIDADE: " + p.getDescription());
 
         switch (p.getType()) {
@@ -241,6 +245,7 @@ public class GameEngine {
 
         if (nextRoom != null) {
             p.move(nextRoom);
+            p.logEvent(countTurn, "AUTO_MOVE", "Movimento para: " + nextRoom);
             System.out.println("Movimento Automático: " + p.getName() + " foi para " + nextRoom);
         }
     }

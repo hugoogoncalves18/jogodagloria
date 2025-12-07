@@ -229,6 +229,7 @@ public class GameWindow extends JFrame implements KeyListener {
                     JOptionPane.QUESTION_MESSAGE);
 
             if (riddle.checkAnswer(resposta)) {
+                player.logEvent(1, "RIDDLE", "Acertou o enigma: " + riddle.getId());
                 int bonus = riddle.getBonus();
                 JOptionPane.showMessageDialog(this, "Correto! Avanças " + bonus + " casas.");
 
@@ -241,6 +242,7 @@ public class GameWindow extends JFrame implements KeyListener {
                 }
 
             } else {
+                player.logEvent(1, "RIDDLE", "Errou o enigma: " + riddle.getId());
                 int penalty = riddle.getPenalty();
                 JOptionPane.showMessageDialog(this, "Errado! A resposta era: " + riddle.getAnswer() +
                         "\nPerdes a vez.");
@@ -251,11 +253,13 @@ public class GameWindow extends JFrame implements KeyListener {
             // Lógica Bot
             boolean acertou = Math.random() > 0.5;
             if (acertou) {
+                player.logEvent(1, "RIDDLE", "Bot acertou o enigma: " + riddle.getId());
                 System.out.println("Bot acertou enigma! Bónus: " + riddle.getBonus());
                 try {
                     engine.applyAutoMove(player, riddle.getBonus());
                 } catch (Exception e) {}
             } else {
+                player.logEvent(1, "RIDDLE", "Bot errou o enigma: " + riddle.getId());
                 System.out.println("Bot errou enigma.");
                 player.setSkipTurns(player.getSkipTurns() + riddle.getPenalty());
                 player.setMovementPoints(0);
@@ -277,6 +281,9 @@ public class GameWindow extends JFrame implements KeyListener {
             winner.incrementWins();
         }
 
+        String winnerName = (winner != null) ? winner.getName() : "Ninguém";
+        com.jogogloria.io.History.generateDoc(allPlayers, winnerName);
+
         ArrayOrderedList<PlayerScore> ranking = new ArrayOrderedList<>();
         it = allPlayers.iterator();
         while (it.hasNext()) {
@@ -295,6 +302,7 @@ public class GameWindow extends JFrame implements KeyListener {
             score.append(pos).append("º - ").append(ps.toString()).append("\n");
             pos++;
         }
+
 
         String[] options = {"Jogar novamente", "Menu", "Sair"};
         int choice = JOptionPane.showOptionDialog(this, score.toString(), "Fim", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
