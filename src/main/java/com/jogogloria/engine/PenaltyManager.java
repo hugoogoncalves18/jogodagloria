@@ -1,36 +1,33 @@
 package com.jogogloria.engine;
 
-import com.example.Biblioteca.exceptions.EmptyCollectionException;
-import com.example.Biblioteca.queues.CircularArrayQueue;
+import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.jogogloria.config.GameConfig;
 import com.jogogloria.io.PenaltyLoader;
 import com.jogogloria.model.Penalty;
 
 public class PenaltyManager {
 
-    private CircularArrayQueue<Penalty> penaltyList;
+    // Usamos Lista em vez de Queue para permitir acesso aleatório (.get)
+    private ArrayUnorderedList<Penalty> penaltyList;
 
     public PenaltyManager() {
         this.penaltyList = PenaltyLoader.loadPenalties(GameConfig.PENALTIES_FILE);
 
-
+        // Fallback
         if (this.penaltyList.isEmpty()) {
-            System.out.println("Aviso: A usar penalidade de fallback.");
-            this.penaltyList.enqueue(new Penalty("Perde a vez (Fallback)", Penalty.PenaltyType.SKIP_TURN, 1));
+            this.penaltyList.addToRear(new Penalty("Perde a vez (Fallback)", Penalty.PenaltyType.SKIP_TURN, 1));
         }
     }
 
-    public Penalty getNextPenalty() throws EmptyCollectionException {
-        if (penaltyList.isEmpty())
-            throw new EmptyCollectionException("Não existem penalidades");
+    public Penalty getNextPenalty() {
+        if (penaltyList.isEmpty()) return null;
 
-        try {
-            Penalty p = penaltyList.dequeue();
-            penaltyList.enqueue(p);
-            return p;
-        } catch (Exception e) {
-            System.out.println("Erro ao rodar penalidade: " + e.getMessage());
-            return null;
-        }
+        // 1. Gera um índice aleatório
+        int size = penaltyList.size();
+        int randomIndex = (int) (Math.random() * size);
+
+        // 2. Retorna a penalidade nessa posição
+        // Como não a removemos, ela volta a estar disponível (baralho infinito)
+        return penaltyList.get(randomIndex);
     }
 }

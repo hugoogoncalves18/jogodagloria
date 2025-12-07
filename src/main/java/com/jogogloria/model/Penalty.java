@@ -1,6 +1,6 @@
 package com.jogogloria.model;
 
-public class Penalty {
+public class Penalty implements Comparable<Penalty> {
 
     public enum PenaltyType {
         RETREAT, //Recua o próprio jogador
@@ -34,4 +34,11 @@ public class Penalty {
     public String toString() {
         return description;
     }
+
+    @Override
+    public int compareTo(Penalty o) {
+        return 0;
+    }
 }
+
+
