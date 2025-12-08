@@ -25,11 +25,11 @@ public class Main {
      * @param numHumans Quantidade de jogadores humanos
      * @param numBots Quantidade de bots
      */
-    public static void launchGame(int numHumans, int numBots) {
+    public static void launchGame(int numHumans, int numBots, String mapFilePath) {
         SwingUtilities.invokeLater(() -> {
             try {
-                System.out.println("A carregar mapa...");
-                Labyrinth labyrinth = MapLoader.loadLabyrinth(GameConfig.MAP_FILE);
+                System.out.println("A carregar mapa..." + mapFilePath);
+                Labyrinth labyrinth = MapLoader.loadLabyrinth(mapFilePath);
 
                 GameEngine engine = new GameEngine(labyrinth);
                 ArrayUnorderedList<Player> allPlayers = new ArrayUnorderedList<>();
@@ -55,11 +55,12 @@ public class Main {
                 GameWindow window = new GameWindow(labyrinth, engine, allPlayers, 20, 20);
                 window.setVisible(true);
 
-                System.out.println("Jogo iniciado: " + numHumans + " Humanos, " + numBots + " Bots.");
+                System.out.println("Jogo iniciado: " + numHumans + " Humanos, " + numBots + " Bots." + "\nMapa selecionado: " + mapFilePath);
 
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Erro crítico ao iniciar o jogo: " + e.getMessage());
+                javax.swing.JOptionPane.showMessageDialog(null, "Erro ao carregar o mapa:\n" + e.getMessage());
             }
         });
     }

@@ -1,6 +1,6 @@
 package com.jogogloria.utils;
 
-import com.example.Biblioteca.lists.ArrayUnorderedList; // Import necessário
+import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.iterators.Iterator;
 
 public class SimpleMap<K, V> {

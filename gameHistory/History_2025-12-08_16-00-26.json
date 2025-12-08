@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-12-08T16:00:26.506358100",
+  "vencedor": "Jogador 1",
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "tipo": "HUMAN",
+      "vitorias": 1,
+      "historico": [
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 0-1", \"time\": \"15:59:56.245275200\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 0-2", \"time\": \"15:59:56.443274300\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 0-3", \"time\": \"15:59:56.695450800\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 0-4", \"time\": \"15:59:56.932810800\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 1-4", \"time\": \"15:59:58.909984\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-4", \"time\": \"15:59:59.175562900\"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 3-4", \"time\": \"16:00:06.051724700\"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 4-4", \"time\": \"16:00:06.283331600\"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 4-5", \"time\": \"16:00:06.531926500\"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 4-6", \"time\": \"16:00:06.955735400\"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 5-6", \"time\": \"16:00:07.194053\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 6-6", \"time\": \"16:00:13.242275900\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 6-5", \"time\": \"16:00:13.952404600\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 6-4", \"time\": \"16:00:14.205100400\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 7-4", \"time\": \"16:00:14.463137400\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 8-4", \"time\": \"16:00:18.619038300\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 9-4", \"time\": \"16:00:18.927874\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 9-3", \"time\": \"16:00:19.418893200\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 9-4", \"time\": \"16:00:20.650664800\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 9-5", \"time\": \"16:00:20.919975\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 9-6", \"time\": \"16:00:25.615118200\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 10-6", \"time\": \"16:00:25.843363100\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 10-7", \"time\": \"16:00:26.072314900\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 10-8", \"time\": \"16:00:26.307249200\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 9-8", \"time\": \"16:00:26.496354200\"}
+      ]
+    },
+    {
+      "nome": "Jogador 2",
+      "tipo": "HUMAN",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 19-1", \"time\": \"16:00:03.723888700\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 19-2", \"time\": \"16:00:03.950156100\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 19-3", \"time\": \"16:00:08.861769200\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 19-4", \"time\": \"16:00:09.068701200\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 18-4", \"time\": \"16:00:09.362930300\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 17-4", \"time\": \"16:00:09.565104300\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 16-4", \"time\": \"16:00:09.746657200\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 15-4", \"time\": \"16:00:09.937597500\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-4", \"time\": \"16:00:16.346685400\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-5", \"time\": \"16:00:16.697639400\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-6", \"time\": \"16:00:17.132266700\"},
+        {"turn": 8, "type": "MOVE", "description": "Moveu-se para: 13-6", \"time\": \"16:00:23.308545800\"},
+        {"turn": 8, "type": "MOVE", "description": "Moveu-se para: 12-6", \"time\": \"16:00:23.491871500\"},
+        {"turn": 8, "type": "MOVE", "description": "Moveu-se para: 12-7", \"time\": \"16:00:23.945917500\"},
+        {"turn": 8, "type": "MOVE", "description": "Moveu-se para: 12-8", \"time\": \"16:00:24.139939200\"}
+      ]
+    }
+  ]
+}

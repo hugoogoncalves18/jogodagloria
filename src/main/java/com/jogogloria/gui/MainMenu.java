@@ -1,6 +1,10 @@
 package com.jogogloria.gui;
 
+import com.jogogloria.config.GameConfig;
 import com.jogogloria.gui.Main;
+import com.jogogloria.io.MapManager; // Importante para listar os mapas
+import com.example.Biblioteca.lists.ArrayUnorderedList;
+import com.example.Biblioteca.iterators.Iterator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,12 +16,13 @@ public class MainMenu extends JFrame {
     public MainMenu() {
         setTitle("Jogo da Glória - Menu Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(400, 350); // Aumentei um pouco a altura
         setLocationRelativeTo(null);
-        setLayout(new GridBagLayout()); // Centraliza tudo
+        setLayout(new GridBagLayout());
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 1, 10, 10)); // 3 Linhas, espaçamento de 10px
+        // Alterado para 4 linhas para caberem os 3 botões + Título
+        panel.setLayout(new GridLayout(4, 1, 10, 10));
 
         // 1. Título
         JLabel titleLabel = new JLabel("JOGO DA GLÓRIA", SwingConstants.CENTER);
@@ -46,21 +51,26 @@ public class MainMenu extends JFrame {
         });
         panel.add(btnMulti);
 
-        add(panel);
-
-        //Editor de mapas
-        JButton btnEditor = new JButton("Editor de mapas");
+        // 4. Botão Editor de Mapas
+        JButton btnEditor = new JButton("Editor de Mapas");
         btnEditor.setFont(new Font("Arial", Font.PLAIN, 16));
         btnEditor.addActionListener(e -> {
-            this.dispose();
-            JOptionPane.showMessageDialog(null, "O editor de mapas roda na consola");
-            com.jogogloria.engine.MapEditor.start();
+            this.dispose(); // Fecha o menu
+
+            JOptionPane.showMessageDialog(null,
+                    "O Editor foi iniciado na CONSOLA.");
+
+            // Arranca o editor numa nova thread
+            new Thread(() -> {
+                com.jogogloria.engine.MapEditor.start();
+            }).start();
         });
         panel.add(btnEditor);
+
+        add(panel);
     }
 
     private void setupSinglePlayer() {
-        // Abre janela para escolher número de bots (1 a 3)
         String[] options = {"1 Bot", "2 Bots", "3 Bots"};
         int choice = JOptionPane.showOptionDialog(
                 this,
@@ -74,15 +84,20 @@ public class MainMenu extends JFrame {
         );
 
         if (choice != -1) {
-            int numBots = choice + 1; // choice 0 = 1 bot, etc.
-            this.dispose(); // Fecha o Menu
-            // Inicia o jogo: 1 Humano, N Bots
-            Main.launchGame(1, numBots);
+            int numBots = choice + 1;
+
+            // Pergunta qual o mapa
+            String mapFile = escolherMapa();
+
+            if (mapFile != null) {
+                this.dispose();
+                // Chama o launchGame com o mapa escolhido
+                Main.launchGame(1, numBots, mapFile);
+            }
         }
     }
 
     private void setupMultiPlayer() {
-        // Abre janela para escolher número de jogadores (2 a 4)
         String[] options = {"2 Jogadores", "3 Jogadores", "4 Jogadores"};
         int choice = JOptionPane.showOptionDialog(
                 this,
@@ -96,10 +111,55 @@ public class MainMenu extends JFrame {
         );
 
         if (choice != -1) {
-            int numHumans = choice + 2; // choice 0 = 2 jogadores, etc.
-            this.dispose(); // Fecha o Menu
-            // Inicia o jogo: N Humanos, 0 Bots
-            Main.launchGame(numHumans, 0);
+            int numHumans = choice + 2;
+
+            // Pergunta qual o mapa
+            String mapFile = escolherMapa();
+
+            if (mapFile != null) {
+                this.dispose();
+                // Chama o launchGame com o mapa escolhido
+                Main.launchGame(numHumans, 0, mapFile);
+            }
         }
+    }
+
+    /**
+     * Método auxiliar para listar e escolher mapas da pasta 'maps'.
+     */
+    private String escolherMapa() {
+        // 1. Obter lista de mapas da pasta usando o MapManager
+        ArrayUnorderedList<String> mapas = MapManager.listMaps();
+
+        if (mapas.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Nenhum mapa encontrado na pasta 'maps'!\nVou usar o mapa padrão.");
+            return GameConfig.MAP_FILE; // Fallback
+        }
+
+        // 2. Converter a tua lista personalizada para Array de Strings (para o JOptionPane)
+        String[] opcoesMapas = new String[mapas.size()];
+        Iterator<String> it = mapas.iterator();
+        int i = 0;
+        while(it.hasNext()) {
+            opcoesMapas[i++] = it.next();
+        }
+
+        // 3. Mostrar janela de escolha (ComboBox)
+        String escolha = (String) JOptionPane.showInputDialog(
+                this,
+                "Escolhe o campo de batalha:",
+                "Seleção de Mapa",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opcoesMapas,
+                opcoesMapas[0]
+        );
+
+        // Se cancelar, retorna null
+        if (escolha == null) return null;
+
+        // Constrói o caminho completo (assumindo que MapManager lê da pasta 'maps')
+        return "maps/" + escolha;
     }
 }
