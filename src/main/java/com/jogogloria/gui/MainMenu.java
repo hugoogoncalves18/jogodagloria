@@ -47,6 +47,16 @@ public class MainMenu extends JFrame {
         panel.add(btnMulti);
 
         add(panel);
+
+        //Editor de mapas
+        JButton btnEditor = new JButton("Editor de mapas");
+        btnEditor.setFont(new Font("Arial", Font.PLAIN, 16));
+        btnEditor.addActionListener(e -> {
+            this.dispose();
+            JOptionPane.showMessageDialog(null, "O editor de mapas roda na consola");
+            com.jogogloria.engine.MapEditor.start();
+        });
+        panel.add(btnEditor);
     }
 
     private void setupSinglePlayer() {

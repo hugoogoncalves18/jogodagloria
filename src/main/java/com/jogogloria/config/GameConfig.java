@@ -3,7 +3,7 @@ import java.awt.Color;
 
 public class GameConfig {
     //Ficheiros e recursos
-    public static final String MAP_FILE = "mapa.json";
+    public static final String MAP_FILE = "maps/mapa.json";
     public static final String RIDDLES_FILE = "riddles.json";
     public static final String PENALTIES_FILE = "penalties.json";
     public static final String IMG_FOLDER = "resources/";
