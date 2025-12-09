@@ -196,7 +196,7 @@ public class GameEngine {
 
         switch (p.getType()) {
             case RETREAT:
-                applyAutoMove(victim, p.getValue());
+                applyAutoMove(victim, -Math.abs(p.getValue()));
                 break;
 
             case SKIP_TURN:
@@ -204,12 +204,11 @@ public class GameEngine {
                 break;
 
             case PLAYERS_BENEFITS:
-                // CORREÇÃO: Usar Iterator explícito para evitar erro "Foreach not applicable"
                 Iterator<Player> it = allPlayers.iterator();
                 while (it.hasNext()) {
                     Player other = it.next();
                     if (!other.getId().equals(victim.getId())) {
-                        applyAutoMove(other, p.getValue());
+                        applyAutoMove(other, Math.abs(p.getValue()));
                     }
                 }
                 break;
@@ -231,10 +230,18 @@ public class GameEngine {
         }
 
         String targetId = (steps > 0) ? labyrinth.getTreasureRoom() : labyrinth.getStartRoomId();
+        //Proteção contra mapas mal configurados
+        if (targetId == null) {
+            System.out.println("Erro: sala de destino não definida");
+            return;
+        }
         int moves = Math.abs(steps);
 
         Iterator<String> path = labyrinth.getShortestPath(p.getCurrentRoomId(), targetId);
-        if (path == null || !path.hasNext()) return;
+        if (path == null || !path.hasNext()){
+            System.out.println("AutoMove falhou: Não há caminho para " + targetId);
+            return;
+        }
         path.next(); // Ignora atual
 
         String nextRoom = null;

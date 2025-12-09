@@ -1,6 +1,6 @@
 package com.jogogloria.model;
 
-public class Room {
+public class Room implements Comparable<Room> {
 
     public enum RoomType {
         START, NORMAL, RIDDLE, LEVER, PENALTY, BOOST, EXIT
@@ -50,5 +50,10 @@ public class Room {
     @Override
     public String toString() {
         return "Room [" + id + "] (" + x + "," + y + ") Type: " + type;
+    }
+
+    @Override
+    public int compareTo(Room o) {
+        return 0;
     }
 }

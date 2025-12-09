@@ -3,18 +3,22 @@ package com.jogogloria.model;
 import com.example.Biblioteca.Graphs.AdjListGraph;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.exceptions.EmptyCollectionException;
-import com.jogogloria.utils.SimpleMap; // Assumindo que existe
+import com.jogogloria.utils.SimpleMap;
 import com.example.Biblioteca.iterators.Iterator;
-import com.jogogloria.model.Lever;
 
 public class Labyrinth {
-    // Grafo principal: Vértices = IDs das Salas, Arestas = Corredores
+
+    // --- Estruturas de Dados ---
     public final AdjListGraph<String> graphStructure;
 
-    // Mapas para acesso rápido O(1) aos objetos de dados
     private final SimpleMap<String, Room> roomMap;
     private final SimpleMap<String, Corridor> corridorMap;
     private final SimpleMap<String, Lever> leverMap;
+
+    // Listas Auxiliares (Para iteração sequencial)
+    private final ArrayUnorderedList<Room> storedRooms;
+    private final ArrayUnorderedList<Corridor> storedCorridors;
+    private final ArrayUnorderedList<Lever> storedLevers; // [NOVO] Lista de alavancas
 
     private final ArrayUnorderedList<String> entryPoints;
     private String startRoomId;
@@ -22,84 +26,82 @@ public class Labyrinth {
 
     public Labyrinth() {
         this.graphStructure = new AdjListGraph<>();
+
         this.roomMap = new SimpleMap<>();
         this.corridorMap = new SimpleMap<>();
-        this.entryPoints = new ArrayUnorderedList<>();
         this.leverMap = new SimpleMap<>();
+
+        this.storedRooms = new ArrayUnorderedList<>();
+        this.storedCorridors = new ArrayUnorderedList<>();
+        this.storedLevers = new ArrayUnorderedList<>();
+        this.entryPoints = new ArrayUnorderedList<>();
     }
 
-    /**
-     * Adiciona uma sala ao grafo e ao mapa de lookup.
-     */
     public void addRoom(Room room) {
         if (room == null) return;
-
         String id = room.getId();
         if (!roomMap.containsKey(id)) {
             roomMap.put(id, room);
             graphStructure.addVertex(id);
+            storedRooms.addToRear(room);
         }
     }
 
-    /**
-     * Cria e adiciona um corredor entre duas salas baseando-se nos seus IDs.
-     * Gera uma chave canónica (ex: "A-B" e não "B-A") para evitar duplicados no mapa.
-     */
     public void addCorridor(String idA, String idB) {
         if (!roomMap.containsKey(idA) || !roomMap.containsKey(idB)) return;
-
-        // Adiciona aresta ao Grafo (bidirecional)
-        graphStructure.addEdge(idA, idB);
-
-        // Cria o objeto de dados Corridor
         String canonicalKey = getCanonicalCorridorKey(idA, idB);
+        if (corridorMap.containsKey(canonicalKey)) return;
+
+        graphStructure.addEdge(idA, idB);
         Corridor corridor = new Corridor(canonicalKey, idA, idB);
         corridorMap.put(canonicalKey, corridor);
+        storedCorridors.addToRear(corridor);
     }
 
     public void addLever(String roomId, Lever lever) {
         leverMap.put(roomId, lever);
+        storedLevers.addToRear(lever); // [NOVO] Guardar na lista
     }
 
-    public Lever getLever(String roomId) {
-        return leverMap.get(roomId);
+    // [NOVO] Permite ao Bot iterar sobre todas as alavancas para encontrar uma útil
+    public Iterator<Lever> getLeversIterator() {
+        return storedLevers.iterator();
     }
 
-    /**
-     * Retorna a Sala baseada nas coordenadas X e Y.
-     * Útil para o MapLoader e para o BoardPanel (interface gráfica).
-     */
-    public Room getRoomAt(int x, int y) {
-        String id = x + "-" + y; // Formato padrão acordado
-        return roomMap.get(id);
+    public boolean isValidMove(String fromId, String toId) {
+        boolean isConnected = false;
+        try {
+            isConnected = graphStructure.isConnected();
+        } catch (Exception e) { return false; }
+
+        if (!isConnected) return false;
+        Corridor c = getCorridor(fromId, toId);
+        return c != null && !c.isLocked();
     }
 
-    public Room getRoom(String id) {
-        return roomMap.get(id);
+    public void setCorridorLocked(String idA, String idB, boolean locked) {
+        Corridor c = getCorridor(idA, idB);
+        if (c != null) c.setLocked(locked);
     }
 
-    public Corridor getCorridor(String idA, String idB) {
-        return corridorMap.get(getCanonicalCorridorKey(idA, idB));
-    }
+    // --- Getters e Iteradores ---
 
-    // --- Métodos de Grafo e Pathfinding (Para os Bots) ---
+    public Iterator<Room> getRoomsIterator() { return storedRooms.iterator(); }
+    public Iterator<Corridor> getCorridorIterator() { return storedCorridors.iterator(); }
 
-    /**
-     * Retorna um iterador com o caminho mais curto entre A e B.
-     * Essencial para a IA dos Bots.
-     */
+    public Lever getLever(String roomId) { return leverMap.get(roomId); }
+    public Room getRoomAt(int x, int y) { return roomMap.get(x + "-" + y); }
+    public Room getRoom(String id) { return roomMap.get(id); }
+    public Corridor getCorridor(String idA, String idB) { return corridorMap.get(getCanonicalCorridorKey(idA, idB)); }
+
     public Iterator<String> getShortestPath(String startId, String targetId) {
         try {
             return graphStructure.iteratorShortestPath(startId, targetId);
         } catch (EmptyCollectionException | IllegalArgumentException e) {
-            // Retorna iterador vazio em caso de erro para não quebrar o jogo
             return new ArrayUnorderedList<String>().iterator();
         }
     }
 
-    /**
-     * Retorna vizinhos imediatos (para validar movimento humano).
-     */
     public ArrayUnorderedList<String> getNeighbors(String roomId) {
         try {
             return graphStructure.getAdjacencyList(roomId);
@@ -109,18 +111,13 @@ public class Labyrinth {
     }
 
     public Iterator<String> iteratorBFS(String startId) throws EmptyCollectionException {
-        // Delega para o método já existente na tua biblioteca de grafos
         return graphStructure.iteratorBFS(startId);
     }
 
-    // --- Helpers ---
-
     public void setStartRoom(String id) { this.startRoomId = id; }
     public String getStartRoomId() { return startRoomId; }
-
     public void setTreasureRoom(String id) { this.endRoomId = id; }
     public String getTreasureRoom() { return endRoomId; }
-
     public void addEntryPoint(String id) { entryPoints.addToRear(id); }
     public ArrayUnorderedList<String> getEntryPoints() { return entryPoints; }
 

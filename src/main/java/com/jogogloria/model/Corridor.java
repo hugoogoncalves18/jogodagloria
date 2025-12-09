@@ -1,7 +1,7 @@
 package com.jogogloria.model;
 import com.example.Biblioteca.lists.LinkedList;
 
-public class Corridor {
+public class Corridor implements Comparable<Corridor> {
     private final String id;
     private final String roomAId;
     private final String roomBId;
@@ -32,5 +32,10 @@ public class Corridor {
         if (currentRoomId.equals(roomAId)) return roomBId;
         if (currentRoomId.equals(roomBId)) return roomAId;
         return null;
+    }
+
+    @Override
+    public int compareTo(Corridor o) {
+        return 0;
     }
 }

@@ -1,6 +1,6 @@
 package com.jogogloria.model;
 
-public class Lever {
+public class Lever implements Comparable<Lever> {
     private final String id;
     private final String doorA;
     private final String doorB;
@@ -32,5 +32,10 @@ public class Lever {
     @Override
     public String toString() {
         return "Alavanca" + id + "Abre: " + doorA + "<->" + doorB;
+    }
+
+    @Override
+    public int compareTo(Lever o) {
+        return 0;
     }
 }

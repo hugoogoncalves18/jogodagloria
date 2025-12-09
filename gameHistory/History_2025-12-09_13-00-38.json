@@ -1,0 +1,68 @@
+{
+  "timestamp": "2025-12-09T13:00:38.951067800",
+  "vencedor": "Jogador 1",
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "tipo": "HUMAN",
+      "vitorias": 1,
+      "historico": [
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 0-1", \"time\": \"12:59:46.398205200\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 0-2", \"time\": \"12:59:46.590176600\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 0-3", \"time\": \"13:00:11.952237300\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 0-4", \"time\": \"13:00:12.256132\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 1-4", \"time\": \"13:00:12.664424400\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 2-4", \"time\": \"13:00:21.497576200\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 3-4", \"time\": \"13:00:21.715134800\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 4-4", \"time\": \"13:00:21.901998\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 4-5", \"time\": \"13:00:22.116971300\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 4-6", \"time\": \"13:00:22.314968600\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 5-6", \"time\": \"13:00:22.511975\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 6-6", \"time\": \"13:00:30.365783900\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 6-7", \"time\": \"13:00:38.033506400\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 6-8", \"time\": \"13:00:38.283638800\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 7-8", \"time\": \"13:00:38.534922600\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 8-8", \"time\": \"13:00:38.738373600\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 9-8", \"time\": \"13:00:38.948076800\"}
+      ]
+    },
+    {
+      "nome": "Bot 1",
+      "tipo": "BOT",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 19-1", \"time\": \"12:59:47.595105500\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 19-2", \"time\": \"12:59:48.595554800\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 19-3", \"time\": \"12:59:49.603543400\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 19-4", \"time\": \"12:59:50.606662\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 18-4", \"time\": \"12:59:51.611135600\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 17-4", \"time\": \"13:00:13.681958700\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 16-4", \"time\": \"13:00:14.688201100\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 15-4", \"time\": \"13:00:15.691525400\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-4", \"time\": \"13:00:16.700249100\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-5", \"time\": \"13:00:17.713650\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 14-6", \"time\": \"13:00:23.529620100\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 13-6", \"time\": \"13:00:24.529936\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 12-6", \"time\": \"13:00:25.531538300\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 12-7", \"time\": \"13:00:26.535850700\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 12-8", \"time\": \"13:00:31.370207400\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 11-8", \"time\": \"13:00:32.375026100\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 10-8", \"time\": \"13:00:33.379050300\"}
+      ]
+    },
+    {
+      "nome": "Bot 2",
+      "tipo": "BOT",
+      "vitorias": 0,
+      "historico": [
+      ]
+    },
+    {
+      "nome": "Bot 3",
+      "tipo": "BOT",
+      "vitorias": 0,
+      "historico": [
+      ]
+    }
+  ]
+}
