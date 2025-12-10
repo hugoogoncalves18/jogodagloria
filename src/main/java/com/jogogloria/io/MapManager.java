@@ -6,9 +6,22 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Gestor de Mapas (I/O), calsse responsável por interagir com o sistema de ficheiros
+ * para listar mapas, gravar novos mapas em JSON
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class MapManager {
+
+    /** Nome da diretoria onde os ficheiros do mapa são guardados*/
     private static final String MAPS_FOLDER = "maps";
 
+    /**
+     * Lista todos os ficheiros do mapa disponiveis na pasta do jogo
+     * @return Lista não ordenada contendo o nome dos ficheiros
+     */
     public static ArrayUnorderedList<String> listMaps() {
         ArrayUnorderedList<String> results = new ArrayUnorderedList<>();
         File folder = new File(MAPS_FOLDER);
@@ -25,6 +38,12 @@ public class MapManager {
         }
         return results;
     }
+
+    /**
+     * Guarda um objeto de dados de mapa num ficheiro JSON
+     * @param map O objeto contendo os dados do mapa a gravar
+     * @param filename Nome do ficheiro de destino
+     */
    public static void saveMap(MapData map, String filename) {
         if (!filename.endsWith(".json"))
             filename += ".json";

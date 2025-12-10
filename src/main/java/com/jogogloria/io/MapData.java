@@ -1,11 +1,25 @@
 package com.jogogloria.io;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
+
+/**
+ * Estrutura de dados intermédia utilizada para representar um mapa em memória
+ * É utilizada pelo editor de mapas
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class MapData {
     public String name;
     public int[][] grid;
     public ArrayUnorderedList<LockData> locked;
     public ArrayUnorderedList<LeverData> levers;
 
+    /**
+     * Cria uma nova estrutura de dados para um mapa vazio
+     * @param name Nome do Mapa
+     * @param width Largura da grelha
+     * @param height Altura da grelha
+     */
     public MapData(String name, int width, int height) {
         this.name = name;
         this.grid = new int[height][width];
@@ -19,6 +33,9 @@ public class MapData {
         }
     }
 
+    /**
+     * Classe auxiliar para armazenar dados de uma porta
+     */
     public static class LockData implements Comparable<LockData> {
         public String roomA;
         public String roomB;
@@ -38,7 +55,11 @@ public class MapData {
             return roomA + " - " + roomB;
         }
     }
-        public static class LeverData implements  Comparable<LeverData> {
+
+    /**
+     * Classe auxiliar para armazenar dados de configuração de uma alavanca
+     */
+    public static class LeverData implements  Comparable<LeverData> {
             public String roomId, id, doorRoomA, doorRoomB;
             public LeverData(String r, String i, String da, String db) {
                 roomId = r;

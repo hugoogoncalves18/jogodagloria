@@ -10,6 +10,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Responsável pela construção do labireinto a partir de ficheiro de config JSON
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class MapLoader {
 
     private static final int EMPTY = 0;
@@ -21,6 +27,11 @@ public class MapLoader {
     private static final int LEVER = 6;
     private static final int EXIT = 9;
 
+    /**
+     * Carrega um labirinto completo a partir de um ficheiro JSON
+     * @param jsonFilePath Caminho para o ficheiro do mapa
+     * @return Objeto {@link Labyrinth} pronto a jogar
+     */
     public static Labyrinth loadLabyrinth(String jsonFilePath) {
         String jsonContent = readJsonFile(jsonFilePath);
         if (jsonContent.isEmpty()) {
@@ -37,6 +48,11 @@ public class MapLoader {
         return labyrinth;
     }
 
+    /**
+     * Lê o conteúdo do ficheiro para uma String
+     * @param filePath
+     * @return
+     */
     private static String readJsonFile(String filePath) {
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -49,6 +65,11 @@ public class MapLoader {
         return content.toString();
     }
 
+    /**
+     * Converto o grid do JSON em matriz
+     * @param jsonContent
+     * @return
+     */
     private static int[][] parseGridData(String jsonContent) {
         int startIndex = jsonContent.indexOf("[[");
         int endIndex = jsonContent.lastIndexOf("]]");
@@ -76,6 +97,11 @@ public class MapLoader {
         return grid;
     }
 
+    /**
+     * Tranca os corredores baseando-se na lista Locked
+     * @param jsonContent
+     * @param labyrinth
+     */
     private static void applyLocks(String jsonContent, Labyrinth labyrinth) {
         int keyIndex = jsonContent.indexOf("\"locked\"");
         if (keyIndex == -1) return;
@@ -105,6 +131,11 @@ public class MapLoader {
         System.out.println("Portas trancadas: " + count);
     }
 
+    /**
+     * Cria e distribui as alavancas pela sala baseando-se na lista Levers
+     * @param jsonContent
+     * @param labyrinth
+     */
     private static void applyLevers(String jsonContent, Labyrinth labyrinth) {
         // Usa "levers" em minúsculas (conforme o teu JSON)
         int keyIndex = jsonContent.indexOf("\"levers\"");
@@ -136,6 +167,12 @@ public class MapLoader {
         System.out.println("Alavancas carregadas: " + count);
     }
 
+    /**
+     * Extrai valores de chaves JSON
+     * @param source
+     * @param key
+     * @return
+     */
     private static String extractValue(String source, String key) {
         String searchKey = "\"" + key + "\":";
         int start = source.indexOf(searchKey);
@@ -160,6 +197,11 @@ public class MapLoader {
         return null;
     }
 
+    /**
+     * Converte a matriz no grafo de salas e corredores
+     * @param gridData
+     * @return
+     */
     private static Labyrinth createLabyrinthFromGrid(int[][] gridData) {
         Labyrinth labyrinth = new Labyrinth();
         int rows = gridData.length;
@@ -198,6 +240,13 @@ public class MapLoader {
         return labyrinth;
     }
 
+    /**
+     * Instancia o objeto com base no código numérico
+     * @param x
+     * @param y
+     * @param code
+     * @return
+     */
     private static Room createRoom(int x, int y, int code) {
         String id = x + "-" + y;
         RoomType type;

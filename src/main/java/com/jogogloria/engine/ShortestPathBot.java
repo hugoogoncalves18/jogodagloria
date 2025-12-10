@@ -18,40 +18,69 @@ public class ShortestPathBot implements BotStrategy {
         }
 
         // --- PLANO A: Tentar ir direto ao Tesouro ---
-        // A DIFERENÇA ESTÁ AQUI: Usamos isPathClear para ver o caminho TODO
         if (isPathClear(labyrinth, currentRoomId, treasureRoomId)) {
             String nextStep = getNextStep(labyrinth, currentRoomId, treasureRoomId);
             if (nextStep != null) return nextStep;
         }
 
-        // --- PLANO B: Caminho bloqueado? Vamos às Alavancas! ---
-        System.out.println("Bot " + player.getName() + ": Caminho bloqueado. A procurar alavancas...");
+        // --- PLANO B: Caminho bloqueado? Usar BFS para achar a alavanca mais perto! ---
+        System.out.println("Bot " + player.getName() + ": Caminho bloqueado. A usar BFS para encontrar alavancas...");
 
-        String nextStepToLever = getMoveToClosestAccessibleLever(labyrinth, currentRoomId);
+        String nextStepToLever = getMoveToLeverBFS(labyrinth, currentRoomId);
 
         if (nextStepToLever != null) {
             return nextStepToLever;
         }
 
         // --- PLANO C: Fallback (Movimento de segurança) ---
-        // Se não houver nada para fazer, move-se aleatoriamente para não bloquear o jogo
         return getAnyValidNeighbor(labyrinth, currentRoomId);
     }
 
     /**
-     * [NOVO] Verifica se TODO o caminho até ao destino está destrancado.
-     * Isto impede o loop de "ir e voltar" quando a porta está longe.
+     * [NOVO - OTIMIZADO] Usa BFS para encontrar a alavanca mais próxima.
+     * Em vez de verificar todas as salas do jogo, verifica em "ondas" a partir do bot.
      */
+    private String getMoveToLeverBFS(Labyrinth labyrinth, String currentRoomId) {
+        try {
+            // 1. Obtém o iterador BFS a partir da posição atual
+            Iterator<String> bfsIterator = labyrinth.iteratorBFS(currentRoomId);
+
+            // 2. Percorre as salas por ordem de proximidade
+            while (bfsIterator.hasNext()) {
+                String roomId = bfsIterator.next();
+
+                // Ignora a própria sala onde estamos
+                if (roomId.equals(currentRoomId)) continue;
+
+                // 3. Verifica se esta sala tem uma alavanca útil
+                Lever l = labyrinth.getLever(roomId);
+
+                if (l != null && !l.isActivated()) {
+                    // Encontrámos a alavanca mais próxima!
+                    // Agora só precisamos de confirmar se conseguimos chegar lá (se o caminho está livre)
+                    if (isPathClear(labyrinth, currentRoomId, roomId)) {
+                        System.out.println("-> Alvo encontrado: Alavanca em " + roomId);
+                        return getNextStep(labyrinth, currentRoomId, roomId);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Erro no BFS: " + e.getMessage());
+        }
+
+        return null; // Nenhuma alavanca acessível encontrada
+    }
+
+
     private boolean isPathClear(Labyrinth lab, String start, String target) {
         Iterator<String> path = lab.getShortestPath(start, target);
 
         if (path == null || !path.hasNext()) return false;
 
-        String current = path.next(); // Começa na sala atual
+        String current = path.next();
 
         while(path.hasNext()) {
             String next = path.next();
-            // Se houver ALGUMA porta trancada no meio do trajeto, o caminho não serve!
             if (!lab.isValidMove(current, next)) {
                 return false;
             }
@@ -60,9 +89,6 @@ public class ShortestPathBot implements BotStrategy {
         return true;
     }
 
-    /**
-     * Helper para obter apenas o próximo passo imediato.
-     */
     private String getNextStep(Labyrinth lab, String start, String target) {
         Iterator<String> path = lab.getShortestPath(start, target);
         if (path != null && path.hasNext()) {
@@ -70,53 +96,6 @@ public class ShortestPathBot implements BotStrategy {
             if (path.hasNext()) return path.next();
         }
         return null;
-    }
-
-    /**
-     * Procura a alavanca mais próxima que:
-     * 1. Ainda não foi ativada.
-     * 2. Tem o caminho até lá DESIMPEDIDO (isPathClear).
-     */
-    private String getMoveToClosestAccessibleLever(Labyrinth labyrinth, String currentRoomId) {
-        Iterator<com.jogogloria.model.Room> roomIt = labyrinth.getRoomsIterator();
-
-        String bestNextStep = null;
-        int shortestDistance = Integer.MAX_VALUE;
-
-        while (roomIt.hasNext()) {
-            com.jogogloria.model.Room r = roomIt.next();
-
-            // Verifica se a sala tem alavanca
-            Lever l = labyrinth.getLever(r.getId());
-
-            // Só interessa se a alavanca existe e NÃO foi puxada
-            if (l != null && !l.isActivated()) {
-
-                // Só vale a pena ir se conseguirmos CHEGAR lá!
-                if (isPathClear(labyrinth, currentRoomId, r.getId())) {
-
-                    int dist = getDistance(labyrinth, currentRoomId, r.getId());
-
-                    // Encontra a mais próxima
-                    if (dist != -1 && dist < shortestDistance) {
-                        shortestDistance = dist;
-                        bestNextStep = getNextStep(labyrinth, currentRoomId, r.getId());
-                    }
-                }
-            }
-        }
-        return bestNextStep;
-    }
-
-    private int getDistance(Labyrinth lab, String start, String end) {
-        Iterator<String> path = lab.getShortestPath(start, end);
-        int count = 0;
-        if (path == null || !path.hasNext()) return -1;
-        while(path.hasNext()) {
-            path.next();
-            count++;
-        }
-        return count;
     }
 
     private String getAnyValidNeighbor(Labyrinth labyrinth, String currentRoomId) {

@@ -9,8 +9,19 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Responsável pelo geração de relatórios do jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class History {
 
+    /**
+     * Gera um ficheiro JSON como resumo completo da partida
+     * @param players A lista dos jogadores que participaram na partida
+     * @param winner O nome do jogador que venceu
+     */
     public static void generateDoc(ArrayUnorderedList<Player> players, String winner) {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
         String filename = "History_" + timestamp + ".json";

@@ -6,8 +6,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Responsável por carrear e interpretar os dados dos enigmas
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class RiddleLoader {
 
+    /**
+     * Carrega a lista de enigmas
+     * @param jsonFilePath Caminho relativo ou absoluto para o ficheiro .json
+     * @return Uma lista não ordenada quem contém todos os enigmas
+     */
     public static ArrayUnorderedList<Riddle> loadRiddles(String jsonFilePath) {
         ArrayUnorderedList<Riddle> riddles = new ArrayUnorderedList<>();
 
@@ -59,6 +70,11 @@ public class RiddleLoader {
 
     //Parsing
 
+    /**
+     * Lê o conteúdo integral de um ficheiro de texto para String
+     * @param filePath O caminho do ficheiro
+     * @return Conteúdo do ficheiro ou string vazia
+     */
     private static String readJsonFile(String filePath) {
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -71,6 +87,12 @@ public class RiddleLoader {
         return content.toString();
     }
 
+    /**
+     * Extrai o valor de uma chave específica num objeto JSON
+     * @param source String que contém o objeto JSON
+     * @param key A cave a procurar
+     * @return Valor associado á chave
+     */
     private static String extractValue(String source, String key) {
         String searchKey = "\"" + key + "\":";
         int start = source.indexOf(searchKey);
@@ -105,6 +127,11 @@ public class RiddleLoader {
         return null;
     }
 
+    /**
+     * Extrai especificamente o array de opções de um enigma
+     * @param source A String de objetos JSON
+     * @return Uma lista com as opções de resposta
+     */
     private static ArrayUnorderedList<String> extractOptions(String source) {
         ArrayUnorderedList<String> list = new ArrayUnorderedList<>();
         int start = source.indexOf("\"options\":");

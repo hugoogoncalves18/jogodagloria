@@ -8,9 +8,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Responsável por carregar as configs de Penalidades a partir de um JSON
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class PenaltyLoader {
 
-    // Agora retorna uma Lista
+    /**
+     * Carrega a lista de penalidades a partir de um caminho
+     * @param jsonFilePath Caminho para o ficheiro .json
+     * @return Uma {@link ArrayUnorderedList} contendo todas as penalidades carregadas
+     */
     public static ArrayUnorderedList<Penalty> loadPenalties(String jsonFilePath) {
         ArrayUnorderedList<Penalty> list = new ArrayUnorderedList<>();
 
@@ -47,8 +57,12 @@ public class PenaltyLoader {
         return list;
     }
 
-    // ... (Mantém os métodos readJsonFile e extractValue iguais ao que tinhas) ...
 
+    /**
+     * Lê o contúdo de um ficheiro de texto
+     * @param filePath Caminho de ficheiro
+     * @return Contúdo como String única
+     */
     private static String readJsonFile(String filePath) {
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -60,6 +74,12 @@ public class PenaltyLoader {
         return content.toString();
     }
 
+    /**
+     * Extrai o valor associado a uma chave JSON numa String
+     * @param source Fragmento de JSON contendo o objeto
+     * @param key A chave a pesquisae
+     * @return O valor extraido
+     */
     private static String extractValue(String source, String key) {
         String searchKey = "\"" + key + "\":";
         int start = source.indexOf(searchKey);
