@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-12-10T10:31:43.822936200",
+  "vencedor": "Bot 3",
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "tipo": "HUMAN",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 1-0", \"time\": \"10:30:31.487431200\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-0", \"time\": \"10:30:31.676428700\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-1", \"time\": \"10:30:31.967426200\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 2-2", \"time\": \"10:30:44.536188100\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 3-2", \"time\": \"10:30:44.966189400\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 4-2", \"time\": \"10:30:45.409186800\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 4-1", \"time\": \"10:30:45.906188500\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 4-0", \"time\": \"10:30:47.220187900\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 5-0", \"time\": \"10:30:47.340186900\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 6-0", \"time\": \"10:31:04.578443700\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 7-0", \"time\": \"10:31:04.867446100\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 7-1", \"time\": \"10:31:05.160442400\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 7-2", \"time\": \"10:31:25.097628100\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 8-2", \"time\": \"10:31:25.364629800\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 9-2", \"time\": \"10:31:36.924312700\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 9-3", \"time\": \"10:31:37.505313200\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 9-4", \"time\": \"10:31:37.759317900\"}
+      ]
+    },
+    {
+      "nome": "Bot 1",
+      "tipo": "BOT",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 18-0", \"time\": \"10:30:33.012429500\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 17-0", \"time\": \"10:30:34.003425400\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 16-0", \"time\": \"10:30:48.347188100\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 15-0", \"time\": \"10:30:49.351187\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-0", \"time\": \"10:30:50.365191100\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-1", \"time\": \"10:30:51.381185600\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-2", \"time\": \"10:30:52.390186900\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 14-3", \"time\": \"10:31:06.180470300\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 14-4", \"time\": \"10:31:07.181469600\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 13-4", \"time\": \"10:31:08.194904100\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 12-4", \"time\": \"10:31:09.198901600\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 12-3", \"time\": \"10:31:10.202904100\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 12-2", \"time\": \"10:31:26.381626700\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 11-2", \"time\": \"10:31:27.396628100\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 10-2", \"time\": \"10:31:28.407312\"},
+        {"turn": 18, "type": "MOVE", "description": "Moveu-se para: 9-2", \"time\": \"10:31:38.768933400\"}
+      ]
+    },
+    {
+      "nome": "Bot 2",
+      "tipo": "BOT",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 1-19", \"time\": \"10:30:35.013700600\"},
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 2-19", \"time\": \"10:30:36.013698600\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 2-18", \"time\": \"10:30:53.397184600\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 3-18", \"time\": \"10:30:54.400803500\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 4-18", \"time\": \"10:30:55.406802400\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 4-19", \"time\": \"10:30:56.413801200\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 5-19", \"time\": \"10:30:57.427801700\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 6-19", \"time\": \"10:30:58.443802300\"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 6-18", \"time\": \"10:31:11.218901200\"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 7-18", \"time\": \"10:31:12.228627900\"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 8-18", \"time\": \"10:31:13.244628100\"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 9-18", \"time\": \"10:31:29.413312500\"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 9-17", \"time\": \"10:31:30.426311700\"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 9-16", \"time\": \"10:31:31.436313600\"},
+        {"turn": 19, "type": "MOVE", "description": "Moveu-se para: 9-17", \"time\": \"10:31:39.776937\"},
+        {"turn": 19, "type": "LEVER", "description": "Ativou a alavanca no: 9-17", \"time\": \"10:31:39.777936900\"}
+      ]
+    },
+    {
+      "nome": "Bot 3",
+      "tipo": "BOT",
+      "vitorias": 1,
+      "historico": [
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 19-18", \"time\": \"10:30:37.011698800\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 19-17", \"time\": \"10:30:38.021698800\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 19-16", \"time\": \"10:30:39.025698600\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 19-15", \"time\": \"10:30:40.024695200\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 19-14", \"time\": \"10:30:41.031722900\"},
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 18-14", \"time\": \"10:30:42.035699\"},
+        {"turn": 8, "type": "MOVE", "description": "Moveu-se para: 17-14", \"time\": \"10:30:59.455799300\"},
+        {"turn": 8, "type": "MOVE", "description": "Moveu-se para: 16-14", \"time\": \"10:31:00.472827700\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 15-14", \"time\": \"10:31:14.258629400\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 14-14", \"time\": \"10:31:15.266626600\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 14-13", \"time\": \"10:31:16.281631900\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 14-12", \"time\": \"10:31:17.295630300\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 14-11", \"time\": \"10:31:18.305629800\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 13-11", \"time\": \"10:31:19.319632100\"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 12-11", \"time\": \"10:31:32.429313500\"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 11-11", \"time\": \"10:31:33.433314300\"},
+        {"turn": 20, "type": "MOVE", "description": "Moveu-se para: 10-11", \"time\": \"10:31:40.787938600\"},
+        {"turn": 20, "type": "MOVE", "description": "Moveu-se para: 10-10", \"time\": \"10:31:41.801936900\"},
+        {"turn": 20, "type": "MOVE", "description": "Moveu-se para: 10-9", \"time\": \"10:31:42.802932700\"},
+        {"turn": 20, "type": "MOVE", "description": "Moveu-se para: 9-9", \"time\": \"10:31:43.817932900\"}
+      ]
+    }
+  ]
+}
