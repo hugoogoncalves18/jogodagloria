@@ -20,6 +20,12 @@ import java.awt.event.KeyListener;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+/**
+ * Janela principal onde decorre a partida do jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class GameWindow extends JFrame implements KeyListener {
 
     private final GameEngine engine;
@@ -32,6 +38,14 @@ public class GameWindow extends JFrame implements KeyListener {
     private final int rows;
     private final int cols;
 
+    /**
+     * Cria e inicia a janela de jogo
+     * @param labyrinth objeto labyrinth carregado
+     * @param engine o motor do jogo
+     * @param allPlayers lista de jogadores
+     * @param rows numero de linhas da grelha visual
+     * @param cols numero de colunas da grelha visual
+     */
     public GameWindow(Labyrinth labyrinth, GameEngine engine, ArrayUnorderedList<Player> allPlayers, int rows, int cols) {
         this.labyrinth = labyrinth;
         this.engine = engine;
@@ -69,6 +83,9 @@ public class GameWindow extends JFrame implements KeyListener {
         updateStatus();
     }
 
+    /**
+     * Atualiza a barra de estado inferior com informações do turno atual
+     */
     private void updateStatus() {
         if (!engine.isGameRunning()) {
             statusLabel.setText("JOGO TERMINADO!");
@@ -97,6 +114,9 @@ public class GameWindow extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Executa a lógica de um turno do Bot
+     */
     private void processBotTurn() {
         if (!engine.isGameRunning()) {
             botTimer.stop();
@@ -132,6 +152,10 @@ public class GameWindow extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Gere inputs de teclado no jogador humano
+     * @param e the event to be processed
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         if (!engine.isGameRunning()) return;
@@ -173,6 +197,13 @@ public class GameWindow extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Tenta mover o jogador humano para a casa adjacente
+     * @param p
+     * @param dx
+     * @param dy
+     * @throws Exception
+     */
     private void moveHuman(Player p, int dx, int dy) throws Exception {
         Room currentRoom = labyrinth.getRoom(p.getCurrentRoomId());
         if (currentRoom == null) return;
@@ -214,6 +245,11 @@ public class GameWindow extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Dispara um enigma
+     * @param player
+     * @throws NoElementFoundException
+     */
     private void handleRiddleEvent(Player player) throws NoElementFoundException {
         Riddle riddle = riddleManager.getRandomRiddle();
 
@@ -267,6 +303,9 @@ public class GameWindow extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Trata do fim do jogo
+     */
     public void handleGameOver() {
         Player winner = null;
         Iterator<Player> it = allPlayers.iterator();
@@ -317,6 +356,9 @@ public class GameWindow extends JFrame implements KeyListener {
         }
     }
 
+    /**
+     * Reinicia a partida com as mesmas configurações
+     */
     private void restartGame() {
         this.dispose();
 

@@ -5,14 +5,25 @@ import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Lever;
 import com.jogogloria.model.Player;
 
+/**
+ * Gestor da lógica das alavancas
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class LeverManager {
 
+    /**
+     * Construtor padrão
+     */
     public LeverManager() {
-        // Agora é stateless (sem estado interno), usa o Labyrinth
     }
 
     /**
      * Verifica e ativa a alavanca na sala atual.
+     * @param player        O jogador que está na sala (para efeitos de logs/mensagens).
+     * @param currentRoomId O ID da sala onde o jogador acabou de aterrar.
+     * @param labyrinth     A referência para o labirinto atual (para aceder aos dados das salas e corredores).
      */
     public void checkLever(Player player, String currentRoomId, Labyrinth labyrinth) {
         // 1. Pede a alavanca ao Labirinto (que foi carregada pelo MapLoader)

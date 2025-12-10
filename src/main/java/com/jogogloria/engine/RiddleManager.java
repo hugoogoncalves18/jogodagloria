@@ -7,16 +7,31 @@ import com.jogogloria.io.RiddleLoader;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.stacks.LinkedStack;
 
+/**
+ * Gestor de enigmas do jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class RiddleManager {
 
     private ArrayUnorderedList<Riddle> availableRiddles;
     private LinkedStack<Riddle> usedRiddles;
 
+    /**
+     * Inicia o gestor de enigmas, carrega os dados a partir de um ficheiro JSON
+     * @param jsonFilePath Caminho para o ficheiro JSON
+     */
     public RiddleManager(String jsonFilePath) {
         this.usedRiddles = new LinkedStack<>();
         this.availableRiddles = RiddleLoader.loadRiddles(jsonFilePath);
     }
 
+    /**
+     * Obtém um enigma aleatório da lista de disponiveis
+     * @return Um objeto {@link Riddle} ou {@code null} de não existirem enigmas
+     * @throws NoElementFoundException Se ocorrer um erro interno
+     */
     public Riddle getRandomRiddle() throws NoElementFoundException {
         if (availableRiddles.isEmpty()) {
             if (usedRiddles.isEmpty()) {
@@ -40,6 +55,9 @@ public class RiddleManager {
         return r;
     }
 
+    /**
+     * Recicla os enigmas utilizados, movendo-os de volta para a lista de disponiveis
+     */
     private void reloadRiddles() {
         while (!usedRiddles.isEmpty()) {
             try {

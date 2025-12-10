@@ -3,9 +3,18 @@ import com.jogogloria.io.MapData;
 import com.jogogloria.io.MapManager;
 import java.util.Scanner;
 
+/**
+ * Ferramenta de linha de comandos para criar e editar mapas
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class MapEditor {
     private static final Scanner scanner = new Scanner(System.in);
 
+    /**
+     * Ponto de entrada do Editor
+     */
     public static void start() {
         System.out.println("\n====Editor de mapas====");
         System.out.print("Nome do ficheiro: ");
@@ -19,6 +28,11 @@ public class MapEditor {
         editor(map, filename);
     }
 
+    /**
+     * Ciclo principal de edição
+     * @param map Objeto de dados do mapa a ser editado
+     * @param filename O nome do ficheiro onde será gravado
+     */
     private static void editor(MapData map, String filename) {
         int cx = 0, cy = 0;
         boolean running = true;

@@ -12,8 +12,18 @@ import com.example.Biblioteca.lists.ArrayUnorderedList;
 
 import javax.swing.SwingUtilities;
 
+/**
+ * Ponto de entrada principal da aplicação Jogo da Glória
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class Main {
 
+    /**
+     * Método a ser executado ao iniciar o programa
+     * @param args Argumentos da linha de comandos
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new MainMenu().setVisible(true);
@@ -21,9 +31,11 @@ public class Main {
     }
 
     /**
-     * Método chamado pelo Menu para arrancar o jogo real.
-     * @param numHumans Quantidade de jogadores humanos
-     * @param numBots Quantidade de bots
+     * Inicia uma sessão de jogo real
+     *
+     * @param numHumans Número de jogadores humanos selecionados
+     * @param numBots Número de bots selecionados
+     * @param mapFilePath Caminho relativo para o ficheiro JSON do mapa a carregar
      */
     public static void launchGame(int numHumans, int numBots, String mapFilePath) {
         SwingUtilities.invokeLater(() -> {

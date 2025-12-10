@@ -12,7 +12,12 @@ import com.jogogloria.model.Penalty;
 import com.jogogloria.model.Boost;
 import com.jogogloria.model.Room.RoomType;
 
-
+/**
+ * Motor central do Jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class GameEngine {
 
     private final Labyrinth labyrinth;
@@ -27,6 +32,10 @@ public class GameEngine {
     private final LeverManager leverManager;
     private final BoostManager boostManager;
 
+    /**
+     * Inicia o motor do jogo
+     * @param labyrinth O labirinto carregado onde o jogo vai decorrer
+     */
     public GameEngine(Labyrinth labyrinth) {
         this.labyrinth = labyrinth;
         this.turnQueue = new LinkedQueue<>();
@@ -41,6 +50,11 @@ public class GameEngine {
 
     // --- Gestão de Jogadores ---
 
+    /**
+     * Adiciona um jogador á partida
+     * @param player O jogador a adicionar
+     * @throws EmptyCollectionException Se ocorrer erro interno nas listas
+     */
     public void addPlayer(Player player) throws EmptyCollectionException {
         if (player.getCurrentRoomId() == null) {
             distributePlayerSpawn(player);
@@ -49,6 +63,10 @@ public class GameEngine {
         allPlayers.addToRear(player); // Guarda na lista global para efeitos de área
     }
 
+    /**
+     * Distribui os jogadores pelos pontos de entrada
+     * @param player
+     */
     private void distributePlayerSpawn(Player player) {
         ArrayUnorderedList<String> entries = labyrinth.getEntryPoints();
         if (entries.isEmpty()) return;
@@ -67,6 +85,10 @@ public class GameEngine {
 
     // --- Ciclo de Jogo (Turnos) ---
 
+    /**
+     * Obtém o jogador que tem a vez de jogar
+     * @return objeto {@link Player} no inicio da fila ou {@code null} se a fila estiver vazia
+     */
     public Player getCurrentPlayer() {
         if (turnQueue.isEmpty()) return null;
         try {
@@ -76,6 +98,9 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Avança para o próximo turno
+     */
     public void nextTurn() {
         if (!gameRunning || turnQueue.isEmpty()) return;
 
@@ -112,6 +137,13 @@ public class GameEngine {
 
     // --- Lógica de Movimento ---
 
+    /**
+     * Tenta mover o jogador atual para uma sala de destino
+     * @param player jogador a mover
+     * @param targetRoomId ID da sala para onde quer ir
+     * @return {@code true} se o movimento foi realizado
+     * @throws EmptyCollectionException em caso de erro nas estruturas de dados
+     */
     public boolean tryMove(Player player, String targetRoomId) throws EmptyCollectionException {
         if (!gameRunning) return false;
 
@@ -153,6 +185,12 @@ public class GameEngine {
         return true;
     }
 
+    /**
+     * Verifica e executa os efeitos especiais da sala onde o ogador aterrou
+     * @param player
+     * @param roomId
+     * @throws EmptyCollectionException
+     */
     private void checkRoomEffects(Player player, String roomId) throws EmptyCollectionException {
         Room room = labyrinth.getRoom(roomId);
         if (room == null) return;
@@ -180,6 +218,10 @@ public class GameEngine {
 
     // --- Eventos Especiais ---
 
+    /**
+     * Processa a lógica de apanhar um Boost
+     * @param player
+     */
     private void handleBoostEvent(Player player) {
         Boost b = boostManager.getNextBoost();
         if (b != null) {
@@ -188,6 +230,11 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Processa a lógica de cair numa penalidade
+     * @param victim
+     * @throws EmptyCollectionException
+     */
     private void handlePenaltyEvent(Player victim) throws EmptyCollectionException {
         Penalty p = penaltyManager.getNextPenalty();
         if (p == null) return;
@@ -216,7 +263,7 @@ public class GameEngine {
     }
 
     /**
-     * Aplica movimento automático (Bónus/Penalidade).
+     * Aplica movimento automático a um jogador
      */
     public void applyAutoMove(Player p, int steps) {
         if (steps == 0) return;
@@ -259,6 +306,10 @@ public class GameEngine {
 
     // --- Bots ---
 
+    /**
+     * Executa a lógica de inteligência para o Bot atual
+     * @throws EmptyCollectionException Se ocorrer erro nas listas
+     */
     public void executeBotTurn() throws EmptyCollectionException {
         Player bot = getCurrentPlayer();
         if (bot == null || !bot.isBot() || !gameRunning) return;
@@ -275,5 +326,9 @@ public class GameEngine {
         }
     }
 
+    /**
+     * Verifica se o jogo está a decorrer
+     * @return {@code true} se o jogo está ativo, {@code false} se alguém já ganhou
+     */
     public boolean isGameRunning() { return gameRunning; }
 }

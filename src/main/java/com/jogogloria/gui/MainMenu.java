@@ -11,8 +11,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Janela do menu principal do jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class MainMenu extends JFrame {
-
+    /**
+     * Construtor do menu principal
+     */
     public MainMenu() {
         setTitle("Jogo da Glória - Menu Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,6 +78,9 @@ public class MainMenu extends JFrame {
         add(panel);
     }
 
+    /**
+     * Configura e inicia uma partida SinglePlayer
+     */
     private void setupSinglePlayer() {
         String[] options = {"1 Bot", "2 Bots", "3 Bots"};
         int choice = JOptionPane.showOptionDialog(
@@ -97,6 +108,9 @@ public class MainMenu extends JFrame {
         }
     }
 
+    /**
+     * Configura e inicia uma partida Multiplayer
+     */
     private void setupMultiPlayer() {
         String[] options = {"2 Jogadores", "3 Jogadores", "4 Jogadores"};
         int choice = JOptionPane.showOptionDialog(
@@ -125,7 +139,7 @@ public class MainMenu extends JFrame {
     }
 
     /**
-     * Método auxiliar para listar e escolher mapas da pasta 'maps'.
+     * Exibe uma janela de diálogo para o utilizador escolher um dos mapas disponiveis
      */
     private String escolherMapa() {
         // 1. Obter lista de mapas da pasta usando o MapManager

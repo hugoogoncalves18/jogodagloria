@@ -5,11 +5,20 @@ import com.jogogloria.config.GameConfig;
 import com.jogogloria.io.PenaltyLoader;
 import com.jogogloria.model.Penalty;
 
+/**
+ * Gestor de Penalidades do jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class PenaltyManager {
 
     // Usamos Lista em vez de Queue para permitir acesso aleatório (.get)
     private ArrayUnorderedList<Penalty> penaltyList;
 
+    /**
+     * Inicia o gestor de penalidades
+     */
     public PenaltyManager() {
         this.penaltyList = PenaltyLoader.loadPenalties(GameConfig.PENALTIES_FILE);
 
@@ -19,6 +28,10 @@ public class PenaltyManager {
         }
     }
 
+    /**
+     * Obtém uma penalidade aleatória da lista
+     * @return Um objeto {@link Penalty} sorteado, ou {@code null} se a lista estiver vazia
+     */
     public Penalty getNextPenalty() {
         if (penaltyList.isEmpty()) return null;
 

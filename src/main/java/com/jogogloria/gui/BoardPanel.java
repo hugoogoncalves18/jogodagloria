@@ -16,7 +16,12 @@ import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
-
+/**
+ * Painel gráfico responsável por desenhar o tabuleiro do jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class BoardPanel extends JPanel {
 
     private final Labyrinth labyrinth;
@@ -25,6 +30,13 @@ public class BoardPanel extends JPanel {
     private final int cols;
     private final ImageManager imageManager;
 
+    /**
+     * Cria um novo painel de jogo
+     * @param labyrinth O objeto labirinto contém a lógica do mapa
+     * @param players Lista de jogadores para renderizar
+     * @param rows Altura da grelha
+     * @param cols Largura da grelha
+     */
     public BoardPanel(Labyrinth labyrinth, ArrayUnorderedList<Player> players, int rows, int cols) {
         this.labyrinth = labyrinth;
         this.players = players;
@@ -39,6 +51,10 @@ public class BoardPanel extends JPanel {
         setBackground(Color.BLACK);
     }
 
+    /**
+     * Método principal de desenho do componente Swing
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -55,6 +71,12 @@ public class BoardPanel extends JPanel {
         drawPlayers(g2d);
     }
 
+    /**
+     * Desenha uma unica sala na posição da grelha
+     * @param g2 Contexto gráfico 2D
+     * @param x Indice da coluna
+     * @param y Indice da linha
+     */
     private void drawCell(Graphics2D g2, int x, int y) {
         Room room = labyrinth.getRoomAt(x, y);
         if (room == null) return;
@@ -86,6 +108,9 @@ public class BoardPanel extends JPanel {
         drawWallsAndDoors(g2, x, y, px, py, size, room.getId());
     }
 
+    /**
+     * Desenha as paredes ou portas nas bordas da sala
+     */
     private void drawWallsAndDoors(Graphics2D g2, int x, int y, int px, int py, int size, String currentId) {
         // --- Parede à DIREITA ---
         if (x + 1 < cols) {
@@ -118,12 +143,14 @@ public class BoardPanel extends JPanel {
         }
     }
 
+    /** Helper para desenhar uma parede sólida*/
     private void drawWall(Graphics2D g2, int x1, int y1, int x2, int y2) {
         g2.setColor(new Color(50, 50, 50));
         g2.setStroke(new BasicStroke(4));
         g2.drawLine(x1, y1, x2, y2);
     }
 
+    /** Helper para desenhar uma porta trancada*/
     private void drawLockedDoor(Graphics2D g2, int x1, int y1, int x2, int y2) {
         g2.setColor(new Color(200, 100, 0)); // Laranja (Porta)
         g2.setStroke(new BasicStroke(8));
@@ -136,6 +163,7 @@ public class BoardPanel extends JPanel {
         g2.fillOval(midX - 3, midY - 3, 6, 6);
     }
 
+    /**Desenha os jogadores nas suas posições atuais */
     private void drawPlayers(Graphics2D g2) {
         Iterator<Player> it = players.iterator();
         int offset = 0;

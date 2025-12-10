@@ -1,6 +1,12 @@
 package com.jogogloria.config;
 import java.awt.Color;
 
+/**
+ * Classe de configuração global para o jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class GameConfig {
     //Ficheiros e recursos
     public static final String MAP_FILE = "maps/mapa.json";

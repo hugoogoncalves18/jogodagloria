@@ -8,15 +8,28 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Gestor de interface gráfica do jogo
+ *
+ * @author Hugo Gonçalves
+ * @version 1.0
+ */
 public class ImageManager {
 
+    /** Cache de imagens: Associa um nome lógico é imagem carregada*/
     private SimpleMap<String, BufferedImage> images;
 
+    /**
+     * Construtor do Gestor de imagens
+     */
     public ImageManager() {
         this.images = new SimpleMap<>();
         loadImages();
     }
 
+    /**
+     * Carrega em lote todas as imagens definidas nas configurações do jogo
+     */
     private void loadImages() {
         // Carregar as texturas para o mapa (Cache)
         loadImage("NORMAL", GameConfig.IMG_FLOOR);
@@ -32,6 +45,11 @@ public class ImageManager {
         loadImage("PLAYER", GameConfig.IMG_PLAYER);
     }
 
+    /**
+     * Método auxiliar que lê uma imagem do disco e guarda na cache
+     * @param key A chave para identificar a imagem futuramente
+     * @param fileName O nome do ficheiro na pasta de recursos
+     */
     private void loadImage(String key, String fileName) {
         try {
             // Tenta ler da pasta resources na raiz
@@ -48,6 +66,11 @@ public class ImageManager {
         }
     }
 
+    /**
+     * Recupera uma imagem da cache pronta a desenhar
+     * @param key A chave da imagem
+     * @return O objeto {@link BufferedImage} ou {@code null} se a imagem não tiver sido carregada
+     */
     public BufferedImage getImage(String key) {
         return images.get(key);
     }
