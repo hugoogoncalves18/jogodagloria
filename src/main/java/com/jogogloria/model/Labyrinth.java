@@ -8,12 +8,6 @@ import com.example.Biblioteca.iterators.Iterator;
 
 /**
  * Representa a estrutura física e lógica do Labirinto.
- * <p>
- * VERSÃO REFATORADA:
- * - Remove listas redundantes (storedLevers, storedCorridors).
- * - Usa referências diretas (Room contém Lever).
- * - Mantém apenas os Mapas essenciais e o Grafo.
- * </p>
  *
  * @author Hugo Gonçalves
  * @version 2.0
@@ -69,9 +63,6 @@ public class Labyrinth {
 
     /**
      * Adiciona um corredor entre dois objetos Sala.
-     * <p>
-     * Alterado para receber objetos Room em vez de Strings, garantindo integridade.
-     * </p>
      *
      * @param rA Objeto da primeira sala.
      * @param rB Objeto da segunda sala.
@@ -98,10 +89,8 @@ public class Labyrinth {
 
     /**
      * Obtém a alavanca localizada numa sala específica.
-     * <p>
-     * Agora pede diretamente à Sala, em vez de procurar num mapa separado.
-     * </p>
-     * * @param roomId ID da sala.
+     *
+     *  @param roomId ID da sala.
      * @return O objeto Lever ou {@code null}.
      */
     public Lever getLever(String roomId) {

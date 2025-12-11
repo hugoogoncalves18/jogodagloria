@@ -310,8 +310,6 @@ public class GameWindow extends JFrame implements KeyListener {
         Player winner = null;
         Iterator<Player> it = allPlayers.iterator();
 
-        // [REFATORADO] Verifica se o objeto Room atual é o Tesouro
-        // Nota: labyrinth.getTreasureRoom() ainda devolve String ID, por isso usamos getRoom()
         String treasureId = labyrinth.getTreasureRoom();
 
         while (it.hasNext()) {

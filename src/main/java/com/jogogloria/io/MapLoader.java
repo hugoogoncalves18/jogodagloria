@@ -121,7 +121,7 @@ public class MapLoader {
     }
 
     /**
-     * [CORRIGIDO] Cria alavancas associando objetos Corridor e Room.
+     * Cria alavancas associando objetos Corridor e Room.
      */
     private static void applyLevers(String jsonContent, Labyrinth labyrinth) {
         int keyIndex = jsonContent.indexOf("\"levers\"");
@@ -187,7 +187,7 @@ public class MapLoader {
     }
 
     /**
-     * [CORRIGIDO] Passa objetos Room para o addCorridor.
+     * Passa objetos Room para o addCorridor.
      */
     private static Labyrinth createLabyrinthFromGrid(int[][] gridData) {
         Labyrinth labyrinth = new Labyrinth();
