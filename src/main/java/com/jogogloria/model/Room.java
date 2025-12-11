@@ -33,6 +33,8 @@ public class Room implements Comparable<Room> {
     /** Campo genérico para guardar informação adicional se necessário. */
     private String extraData;
 
+    private Lever lever;
+
     /**
      * Cria uma nova sala
      * @param id ID
@@ -44,6 +46,7 @@ public class Room implements Comparable<Room> {
         this.type = type;
         this.label = label;
         this.extraData = null;
+        this.lever = null;
 
         // Tenta extrair coordenadas do ID (formato "x-y") para facilitar a GUI
         int tempX = 0, tempY = 0;
@@ -88,6 +91,18 @@ public class Room implements Comparable<Room> {
     }
     public void setExtraData(String extraData) {
         this.extraData = extraData;
+    }
+
+    public void setLever(Lever lever) {
+        this.lever = lever;
+    }
+
+    public Lever getLever() {
+        return this.lever;
+    }
+
+    public boolean hasLever() {
+        return this.lever != null;
     }
 
     /**

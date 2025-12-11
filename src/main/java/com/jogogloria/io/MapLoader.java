@@ -11,10 +11,10 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Responsável pela construção do labireinto a partir de ficheiro de config JSON
+ * Responsável pela construção do labirinto a partir de ficheiro de config JSON.
  *
  * @author Hugo Gonçalves
- * @version 1.0
+ * @version 2.0
  */
 public class MapLoader {
 
@@ -40,19 +40,17 @@ public class MapLoader {
         }
 
         int[][] grid = parseGridData(jsonContent);
+
+        // 1. Cria Salas e Corredores (Estrutura)
         Labyrinth labyrinth = createLabyrinthFromGrid(grid);
 
+        // 2. Aplica Lógica (Trancas e Alavancas)
         applyLocks(jsonContent, labyrinth);
         applyLevers(jsonContent, labyrinth);
 
         return labyrinth;
     }
 
-    /**
-     * Lê o conteúdo do ficheiro para uma String
-     * @param filePath
-     * @return
-     */
     private static String readJsonFile(String filePath) {
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -65,11 +63,6 @@ public class MapLoader {
         return content.toString();
     }
 
-    /**
-     * Converto o grid do JSON em matriz
-     * @param jsonContent
-     * @return
-     */
     private static int[][] parseGridData(String jsonContent) {
         int startIndex = jsonContent.indexOf("[[");
         int endIndex = jsonContent.lastIndexOf("]]");
@@ -97,11 +90,6 @@ public class MapLoader {
         return grid;
     }
 
-    /**
-     * Tranca os corredores baseando-se na lista Locked
-     * @param jsonContent
-     * @param labyrinth
-     */
     private static void applyLocks(String jsonContent, Labyrinth labyrinth) {
         int keyIndex = jsonContent.indexOf("\"locked\"");
         if (keyIndex == -1) return;
@@ -121,6 +109,7 @@ public class MapLoader {
             String roomB = extractValue(item, "roomB");
 
             if (roomA != null && roomB != null) {
+                // Obtém o objeto Corridor e tranca-o
                 Corridor c = labyrinth.getCorridor(roomA, roomB);
                 if (c != null) {
                     c.setLocked(true);
@@ -132,12 +121,9 @@ public class MapLoader {
     }
 
     /**
-     * Cria e distribui as alavancas pela sala baseando-se na lista Levers
-     * @param jsonContent
-     * @param labyrinth
+     * [CORRIGIDO] Cria alavancas associando objetos Corridor e Room.
      */
     private static void applyLevers(String jsonContent, Labyrinth labyrinth) {
-        // Usa "levers" em minúsculas (conforme o teu JSON)
         int keyIndex = jsonContent.indexOf("\"levers\"");
         if (keyIndex == -1) return;
 
@@ -148,7 +134,6 @@ public class MapLoader {
         String content = jsonContent.substring(startArr + 1, endArr);
         if (content.trim().isEmpty()) return;
 
-        // Split correto por objetos
         String[] items = content.split("},");
 
         int count = 0;
@@ -159,20 +144,25 @@ public class MapLoader {
             String doorB = extractValue(item, "doorRoomB");
 
             if (roomId != null && doorA != null && doorB != null) {
-                Lever lever = new Lever(id != null ? id : "L" + count, doorA, doorB);
-                labyrinth.addLever(roomId, lever);
-                count++;
+                // 1. Obter a Sala onde fica a alavanca
+                Room room = labyrinth.getRoom(roomId);
+
+                // 2. Obter o Corredor alvo (usando os IDs do JSON)
+                Corridor targetCorridor = labyrinth.getCorridor(doorA, doorB);
+
+                if (room != null && targetCorridor != null) {
+                    // 3. Criar a Lever com referência ao Corredor
+                    Lever lever = new Lever(id != null ? id : "L" + count, targetCorridor);
+
+                    // 4. Guardar a Lever dentro da Sala
+                    room.setLever(lever);
+                    count++;
+                }
             }
         }
         System.out.println("Alavancas carregadas: " + count);
     }
 
-    /**
-     * Extrai valores de chaves JSON
-     * @param source
-     * @param key
-     * @return
-     */
     private static String extractValue(String source, String key) {
         String searchKey = "\"" + key + "\":";
         int start = source.indexOf(searchKey);
@@ -184,7 +174,6 @@ public class MapLoader {
             int secondQuote = source.indexOf("\"", firstQuote + 1);
             if (secondQuote != -1) return source.substring(firstQuote + 1, secondQuote);
         } else {
-            // Lógica para números
             int comma = source.indexOf(",", start);
             int brace = source.indexOf("}", start);
             int end = -1;
@@ -198,9 +187,7 @@ public class MapLoader {
     }
 
     /**
-     * Converte a matriz no grafo de salas e corredores
-     * @param gridData
-     * @return
+     * [CORRIGIDO] Passa objetos Room para o addCorridor.
      */
     private static Labyrinth createLabyrinthFromGrid(int[][] gridData) {
         Labyrinth labyrinth = new Labyrinth();
@@ -208,6 +195,7 @@ public class MapLoader {
         if (rows == 0) return labyrinth;
         int cols = gridData[0].length;
 
+        // FASE 1: Criar todas as Salas
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 int code = gridData[y][x];
@@ -223,30 +211,33 @@ public class MapLoader {
             }
         }
 
+        // FASE 2: Criar Corredores (ligando as salas já existentes)
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                if (labyrinth.getRoomAt(x, y) == null) continue;
-                String currentId = x + "-" + y;
+                // Obtém o objeto Sala atual
+                Room current = labyrinth.getRoomAt(x, y);
+                if (current == null) continue;
+
+                // Liga com vizinho de CIMA
                 if (y > 0) {
-                    String upId = x + "-" + (y - 1);
-                    if (labyrinth.getRoom(upId) != null) labyrinth.addCorridor(currentId, upId);
+                    Room up = labyrinth.getRoomAt(x, y - 1);
+                    if (up != null) {
+                        labyrinth.addCorridor(current, up);
+                    }
                 }
+
+                // Liga com vizinho da ESQUERDA
                 if (x > 0) {
-                    String leftId = (x - 1) + "-" + y;
-                    if (labyrinth.getRoom(leftId) != null) labyrinth.addCorridor(currentId, leftId);
+                    Room left = labyrinth.getRoomAt(x - 1, y);
+                    if (left != null) {
+                        labyrinth.addCorridor(current, left);
+                    }
                 }
             }
         }
         return labyrinth;
     }
 
-    /**
-     * Instancia o objeto com base no código numérico
-     * @param x
-     * @param y
-     * @param code
-     * @return
-     */
     private static Room createRoom(int x, int y, int code) {
         String id = x + "-" + y;
         RoomType type;

@@ -3,27 +3,29 @@ package com.jogogloria.engine;
 import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Lever;
 import com.jogogloria.model.Player;
+import com.jogogloria.model.Room;
 import com.example.Biblioteca.iterators.Iterator;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 
 /**
- * Implementação de uma estratégia de bot inteligente
+ * Implementação de uma estratégia de bot inteligente.
  *
  * @author Hugo Gonçalves
- * @version 1.0
+ * @version 2.0
  */
 public class ShortestPathBot implements BotStrategy {
 
     /**
-     * Calcula o próximo movimento do bot com base no estado do jogo
+     * Calcula o próximo movimento do bot com base no estado do jogo.
+     *
      * @param labyrinth O mapa do jogo.
-     * @param player O bot que está a mover.
-     * @param rollValue O valor do dado (quantos passos pode dar).
-     * @return O ID da próxima sala para onde o bot deve ir
+     * @param player    O bot que está a mover.
+     * @param rollValue O valor do dado.
+     * @return O ID da próxima sala para onde o bot deve ir.
      */
     @Override
     public String nextMove(Labyrinth labyrinth, Player player, int rollValue) {
-        String currentRoomId = player.getCurrentRoomId();
+        String currentRoomId = player.getCurrentRoom().getId();
         String treasureRoomId = labyrinth.getTreasureRoom();
 
         if (currentRoomId.equals(treasureRoomId)) {
@@ -50,14 +52,16 @@ public class ShortestPathBot implements BotStrategy {
     }
 
     /**
-     * Procura a alavanca útil mais próxima usando o BFS
-     * @param labyrinth O labirinto
-     * @param currentRoomId Posição atual do bot
-     * @return Id da próxima sala em direção á alavanca
+     * Procura a alavanca útil mais próxima usando o BFS.
+     *
+     * @param labyrinth     O labirinto.
+     * @param currentRoomId Posição atual do bot.
+     * @return Id da próxima sala em direção à alavanca.
      */
     private String getMoveToLeverBFS(Labyrinth labyrinth, String currentRoomId) {
         try {
             // 1. Obtém o iterador BFS a partir da posição atual
+            // O grafo continua a trabalhar com Strings (IDs), por isso iteramos IDs.
             Iterator<String> bfsIterator = labyrinth.iteratorBFS(currentRoomId);
 
             // 2. Percorre as salas por ordem de proximidade
@@ -67,15 +71,20 @@ public class ShortestPathBot implements BotStrategy {
                 // Ignora a própria sala onde estamos
                 if (roomId.equals(currentRoomId)) continue;
 
-                // 3. Verifica se esta sala tem uma alavanca útil
-                Lever l = labyrinth.getLever(roomId);
+                // 3. Obtém o objeto Sala real
+                Room r = labyrinth.getRoom(roomId);
 
-                if (l != null && !l.isActivated()) {
-                    // Encontrámos a alavanca mais próxima!
-                    // Agora só precisamos de confirmar se conseguimos chegar lá (se o caminho está livre)
-                    if (isPathClear(labyrinth, currentRoomId, roomId)) {
-                        System.out.println("-> Alvo encontrado: Alavanca em " + roomId);
-                        return getNextStep(labyrinth, currentRoomId, roomId);
+                // 4. Verifica se esta sala tem alavanca (Referência Direta)
+                if (r != null && r.hasLever()) {
+                    Lever l = r.getLever();
+
+                    if (!l.isActivated()) {
+                        // Encontrámos a alavanca mais próxima!
+                        // Confirma se o caminho até lá está livre
+                        if (isPathClear(labyrinth, currentRoomId, roomId)) {
+                            System.out.println("-> Alvo encontrado: Alavanca em " + roomId);
+                            return getNextStep(labyrinth, currentRoomId, roomId);
+                        }
                     }
                 }
             }
@@ -86,13 +95,8 @@ public class ShortestPathBot implements BotStrategy {
         return null; // Nenhuma alavanca acessível encontrada
     }
 
-
     /**
-     * Verifica se o caminho completo entre duas salas está livre de portas trancadas
-     * @param lab Labirinto
-     * @param start Origem
-     * @param target Destino
-     * @return {@code true} se o caminho for percorrível, {@code false} caso contrário
+     * Verifica se o caminho completo entre duas salas está livre de portas trancadas.
      */
     private boolean isPathClear(Labyrinth lab, String start, String target) {
         Iterator<String> path = lab.getShortestPath(start, target);
@@ -112,11 +116,7 @@ public class ShortestPathBot implements BotStrategy {
     }
 
     /**
-     * Calcula o primeiro passo do caminho mais curto para um destino
-     * @param lab
-     * @param start
-     * @param target
-     * @return
+     * Calcula o primeiro passo do caminho mais curto para um destino.
      */
     private String getNextStep(Labyrinth lab, String start, String target) {
         Iterator<String> path = lab.getShortestPath(start, target);
@@ -128,7 +128,7 @@ public class ShortestPathBot implements BotStrategy {
     }
 
     /**
-     * Obtém um vizinho aleatório válido
+     * Obtém um vizinho aleatório válido.
      */
     private String getAnyValidNeighbor(Labyrinth labyrinth, String currentRoomId) {
         try {

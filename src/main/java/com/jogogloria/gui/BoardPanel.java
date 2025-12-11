@@ -173,7 +173,7 @@ public class BoardPanel extends JPanel {
 
         while (it.hasNext()) {
             Player p = it.next();
-            Room r = labyrinth.getRoom(p.getCurrentRoomId());
+            Room r = p.getCurrentRoom();
 
             if (r != null) {
                 int px = r.getX() * size + 10 + offset;

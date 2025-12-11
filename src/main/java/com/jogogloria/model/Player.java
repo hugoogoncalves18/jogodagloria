@@ -22,7 +22,7 @@ public class Player implements Comparable<Player> {
     private int wins = 0;
 
     /** ID da sala onde o jogador começou*/
-    private String initialPosition;
+    private Room initialRoom;
 
     /** Flag que indica se é controlado pelo computador. */
     private final boolean isBot;
@@ -31,7 +31,7 @@ public class Player implements Comparable<Player> {
     private final BotStrategy botStrategy;
 
     /** ID da sala onde o jogador se encontra atualmente. */
-    private String currentRoomId;
+    private Room currentRoom;
 
     /** Número de turnos que o jogador tem de esperar. */
     private int skipTurns = 0;
@@ -76,10 +76,10 @@ public class Player implements Comparable<Player> {
 
     /**
      * Atualiza a posição do jogador
-     * @param roomId O ID da sala destino
+     * @param room O ID da sala destino
      */
-    public void move(String roomId) {
-        this.currentRoomId = roomId;
+    public void move(Room room) {
+        this.currentRoom = room;
     }
 
     // --- Getters e Setters ---
@@ -103,8 +103,8 @@ public class Player implements Comparable<Player> {
      * Obtém o ID da sala atual
      * @return Id da sala
      */
-    public String getCurrentRoomId() {
-        return currentRoomId;
+    public Room getCurrentRoom() {
+        return currentRoom;
     }
 
     /**
@@ -149,12 +149,12 @@ public class Player implements Comparable<Player> {
             movementPoints--;
     }
 
-    public String getInitialPosition() {
-        return initialPosition;
+    public Room getInitialRoom() {
+        return initialRoom;
     }
 
-    public void setInitialPosition(String id) {
-        this.initialPosition = id;
+    public void setInitialPosition(Room room) {
+        this.initialRoom = room;
     }
 
     public int getBoost() {
@@ -207,10 +207,10 @@ public class Player implements Comparable<Player> {
         this.movementPoints = 0;
         this.skipTurns = 0;
         this.boost = 0;
-        if (initialPosition != null) {
-            this.currentRoomId = initialPosition;
+        if (initialRoom != null) {
+            this.currentRoom = initialRoom;
         } else {
-            this.currentRoomId = null;
+            this.currentRoom = null;
         }
         this.logs = new ArrayUnorderedList<>();
     }
@@ -228,6 +228,6 @@ public class Player implements Comparable<Player> {
 
     @Override
     public String toString() {
-        return name + " (" + currentRoomId + ")";
+        return name + " (" + currentRoom + ")";
     }
 }

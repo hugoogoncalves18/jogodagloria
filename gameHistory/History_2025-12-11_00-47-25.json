@@ -1,0 +1,112 @@
+{
+  "timestamp": "2025-12-11T00:47:25.887498900",
+  "vencedor": "Jogador 1",
+  "jogadores": [
+    {
+      "nome": "Jogador 1",
+      "tipo": "HUMAN",
+      "vitorias": 1,
+      "historico": [
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 1-0", \"time\": \"00:45:57.104314300\"},
+        {"turn": 1, "type": "MOVE", "description": "Moveu-se para: 2-0", \"time\": \"00:45:57.410470600\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 2-1", \"time\": \"00:46:09.086490100\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 2-2", \"time\": \"00:46:09.373458400\"},
+        {"turn": 5, "type": "MOVE", "description": "Moveu-se para: 3-2", \"time\": \"00:46:09.654790200\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 4-2", \"time\": \"00:46:38.655641400\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 4-3", \"time\": \"00:46:38.921078800\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 4-4", \"time\": \"00:46:39.144892800\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 5-4", \"time\": \"00:46:39.376305500\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 6-4", \"time\": \"00:46:39.616171500\"},
+        {"turn": 9, "type": "MOVE", "description": "Moveu-se para: 6-3", \"time\": \"00:46:39.905331500\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 6-2", \"time\": \"00:46:57.905355100\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 7-2", \"time\": \"00:46:58.149027400\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 8-2", \"time\": \"00:46:58.385183600\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 9-2", \"time\": \"00:46:58.649046100\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 9-3", \"time\": \"00:46:58.918036700\"},
+        {"turn": 13, "type": "MOVE", "description": "Moveu-se para: 9-4", \"time\": \"00:46:59.158097500\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 9-5", \"time\": \"00:47:13.035330\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 9-6", \"time\": \"00:47:13.324416\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 10-6", \"time\": \"00:47:13.700068200\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 10-7", \"time\": \"00:47:14.058415300\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 10-8", \"time\": \"00:47:14.442838700\"},
+        {"turn": 17, "type": "MOVE", "description": "Moveu-se para: 10-9", \"time\": \"00:47:14.790669700\"},
+        {"turn": 21, "type": "MOVE", "description": "Moveu-se para: 9-9", \"time\": \"00:47:25.885512400\"}
+      ]
+    },
+    {
+      "nome": "Bot 1",
+      "tipo": "BOT",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 18-0", \"time\": \"00:45:58.472548\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 17-0", \"time\": \"00:45:59.444359200\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 16-0", \"time\": \"00:46:00.473764700\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 15-0", \"time\": \"00:46:01.475860600\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 14-0", \"time\": \"00:46:02.489170900\"},
+        {"turn": 2, "type": "MOVE", "description": "Moveu-se para: 14-1", \"time\": \"00:46:03.483370300\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-2", \"time\": \"00:46:10.709456200\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-3", \"time\": \"00:46:11.702215600\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 14-4", \"time\": \"00:46:12.713287700\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 13-4", \"time\": \"00:46:13.707651300\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 12-4", \"time\": \"00:46:14.730974500\"},
+        {"turn": 6, "type": "MOVE", "description": "Moveu-se para: 12-3", \"time\": \"00:46:15.734490400\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 12-2", \"time\": \"00:46:40.938009800\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 11-2", \"time\": \"00:46:41.944735800\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 10-2", \"time\": \"00:46:42.954357600\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 9-2", \"time\": \"00:46:43.955781400\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 9-1", \"time\": \"00:46:44.965015\"},
+        {"turn": 10, "type": "MOVE", "description": "Moveu-se para: 9-0", \"time\": \"00:46:45.971447300\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 9-1", \"time\": \"00:47:00.172100\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 9-0", \"time\": \"00:47:01.183439300\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 9-1", \"time\": \"00:47:02.189834600\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 9-0", \"time\": \"00:47:03.195670800\"},
+        {"turn": 14, "type": "MOVE", "description": "Moveu-se para: 9-1", \"time\": \"00:47:04.198748700\"},
+        {"turn": 14, "type": "LEVER", "description": "Ativou a alavanca no: 9-1", \"time\": \"00:47:04.199731300\"},
+        {"turn": 18, "type": "MOVE", "description": "Moveu-se para: 9-0", \"time\": \"00:47:15.807264500\"}
+      ]
+    },
+    {
+      "nome": "Bot 2",
+      "tipo": "BOT",
+      "vitorias": 0,
+      "historico": [
+        {"turn": 3, "type": "MOVE", "description": "Moveu-se para: 0-18", \"time\": \"00:46:04.495747\"},
+        {"turn": 7, "type": "MOVE", "description": "Moveu-se para: 0-17", \"time\": \"00:46:16.756340500\"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 0-16", \"time\": \"00:46:47.006434200\"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 0-15", \"time\": \"00:46:48.000491600\"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 0-14", \"time\": \"00:46:49.008573300\"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 1-14", \"time\": \"00:46:50.021335\"},
+        {"turn": 11, "type": "MOVE", "description": "Moveu-se para: 2-14", \"time\": \"00:46:51.029153800\"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 3-14", \"time\": \"00:47:05.200709200\"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 4-14", \"time\": \"00:47:06.213726700\"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 4-13", \"time\": \"00:47:07.228482500\"},
+        {"turn": 15, "type": "MOVE", "description": "Moveu-se para: 4-12", \"time\": \"00:47:08.233890\"},
+        {"turn": 19, "type": "MOVE", "description": "Moveu-se para: 4-11", \"time\": \"00:47:16.816927700\"},
+        {"turn": 19, "type": "MOVE", "description": "Moveu-se para: 5-11", \"time\": \"00:47:17.830962100\"},
+        {"turn": 19, "type": "MOVE", "description": "Moveu-se para: 6-11", \"time\": \"00:47:18.827547600\"},
+        {"turn": 19, "type": "MOVE", "description": "Moveu-se para: 7-11", \"time\": \"00:47:19.839450700\"},
+        {"turn": 19, "type": "MOVE", "description": "Moveu-se para: 8-11", \"time\": \"00:47:20.842159\"},
+        {"turn": 19, "type": "MOVE", "description": "Moveu-se para: 8-10", \"time\": \"00:47:21.848508900\"}
+      ]
+    },
+    {
+      "nome": "Bot 3",
+      "tipo": "BOT",
+      "vitorias": 1,
+      "historico": [
+        {"turn": 4, "type": "MOVE", "description": "Moveu-se para: 19-18", \"time\": \"00:46:05.492265500\"},
+        {"turn": 8, "type": "MOVE", "description": "Moveu-se para: 19-17", \"time\": \"00:46:17.745913300\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 19-16", \"time\": \"00:46:52.030740100\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 19-15", \"time\": \"00:46:53.035235600\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 19-14", \"time\": \"00:46:54.030448400\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 18-14", \"time\": \"00:46:55.020090900\"},
+        {"turn": 12, "type": "MOVE", "description": "Moveu-se para: 17-14", \"time\": \"00:46:56.032611600\"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 16-14", \"time\": \"00:47:09.244408200\"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 15-14", \"time\": \"00:47:10.247705700\"},
+        {"turn": 16, "type": "MOVE", "description": "Moveu-se para: 14-14", \"time\": \"00:47:11.249196100\"},
+        {"turn": 20, "type": "MOVE", "description": "Moveu-se para: 14-13", \"time\": \"00:47:22.858483\"},
+        {"turn": 20, "type": "MOVE", "description": "Moveu-se para: 14-12", \"time\": \"00:47:23.860614900\"}
+      ]
+    }
+  ]
+}

@@ -205,7 +205,7 @@ public class GameWindow extends JFrame implements KeyListener {
      * @throws Exception
      */
     private void moveHuman(Player p, int dx, int dy) throws Exception {
-        Room currentRoom = labyrinth.getRoom(p.getCurrentRoomId());
+        Room currentRoom = p.getCurrentRoom();
         if (currentRoom == null) return;
 
         int targetX = currentRoom.getX() + dx;
@@ -214,7 +214,7 @@ public class GameWindow extends JFrame implements KeyListener {
 
         if (targetRoom != null) {
             // Tenta mover (decrementa 1 ponto)
-            boolean success = engine.tryMove(p, targetRoom.getId());
+            boolean success = engine.tryMove(p, targetRoom);
 
             if (success) {
                 boardPanel.repaint();
@@ -309,16 +309,19 @@ public class GameWindow extends JFrame implements KeyListener {
     public void handleGameOver() {
         Player winner = null;
         Iterator<Player> it = allPlayers.iterator();
+
+        // [REFATORADO] Verifica se o objeto Room atual é o Tesouro
+        // Nota: labyrinth.getTreasureRoom() ainda devolve String ID, por isso usamos getRoom()
+        String treasureId = labyrinth.getTreasureRoom();
+
         while (it.hasNext()) {
             Player p = it.next();
-            if (p.getCurrentRoomId().equals(labyrinth.getTreasureRoom())) {
+            if (p.getCurrentRoom() != null && p.getCurrentRoom().getId().equals(treasureId)) {
                 winner = p;
                 break;
             }
         }
-        if (winner != null) {
-            winner.incrementWins();
-        }
+        if (winner != null) winner.incrementWins();
 
         String winnerName = (winner != null) ? winner.getName() : "Ninguém";
         com.jogogloria.io.History.generateDoc(allPlayers, winnerName);
@@ -326,25 +329,22 @@ public class GameWindow extends JFrame implements KeyListener {
         ArrayOrderedList<PlayerScore> ranking = new ArrayOrderedList<>();
         it = allPlayers.iterator();
         while (it.hasNext()) {
-            Player p = it.next();
-            ranking.add(new PlayerScore(p));
+            ranking.add(new PlayerScore(it.next()));
         }
 
         StringBuilder score = new StringBuilder();
-        score.append("Vencedor: ").append(winner != null ? winner.getName() : "Ninguém").append("\n\n");
-        score.append("--- CLASSIFICAÇÃO GERAL ---\n");
+        score.append("Vencedor: ").append(winnerName).append("\n\n");
+        score.append("--- CLASSIFICAÇÃO ---\n");
 
         Iterator<PlayerScore> rankIt = ranking.iterator();
         int pos = 1;
         while (rankIt.hasNext()) {
-            PlayerScore ps = rankIt.next();
-            score.append(pos).append("º - ").append(ps.toString()).append("\n");
-            pos++;
+            score.append(pos++).append("º - ").append(rankIt.next()).append("\n");
         }
 
-
         String[] options = {"Jogar novamente", "Menu", "Sair"};
-        int choice = JOptionPane.showOptionDialog(this, score.toString(), "Fim", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(this, score.toString(), "Fim",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
         if (choice == 0) {
             restartGame();

@@ -1,56 +1,60 @@
 package com.jogogloria.engine;
 
 import com.jogogloria.model.Corridor;
-import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Lever;
 import com.jogogloria.model.Player;
+import com.jogogloria.model.Room;
 
 /**
- * Gestor da lógica das alavancas
+ * Gestor da lógica das alavancas.
  *
  * @author Hugo Gonçalves
- * @version 1.0
+ * @version 2.0
  */
 public class LeverManager {
 
     /**
-     * Construtor padrão
+     * Construtor padrão.
      */
     public LeverManager() {
     }
 
     /**
      * Verifica e ativa a alavanca na sala atual.
-     * @param player        O jogador que está na sala (para efeitos de logs/mensagens).
-     * @param currentRoomId O ID da sala onde o jogador acabou de aterrar.
-     * @param labyrinth     A referência para o labirinto atual (para aceder aos dados das salas e corredores).
+     *
+     * @param player      O jogador que interagiu (para logs).
+     * @param currentRoom O objeto da Sala onde o jogador está.
      */
-    public void checkLever(Player player, String currentRoomId, Labyrinth labyrinth) {
-        // 1. Pede a alavanca ao Labirinto (que foi carregada pelo MapLoader)
-        Lever lever = labyrinth.getLever(currentRoomId);
+    public void checkLever(Player player, Room currentRoom) {
+        // 1. Validação inicial
+        if (currentRoom == null) return;
 
-        if (lever == null) {
-            return; // Não há alavanca aqui
+        // 2. Verifica se a sala tem alavanca (Referência direta)
+        if (!currentRoom.hasLever()) {
+            return;
         }
 
-        // 2. Verifica se já foi usada
+        // 3. Obtém a alavanca diretamente da sala
+        Lever lever = currentRoom.getLever();
+
+        // 4. Verifica se já foi usada
         if (lever.isActivated()) {
             System.out.println("Esta alavanca (" + lever + ") já foi puxada.");
             return;
         }
 
-        // 3. Tenta encontrar o corredor no labirinto
-        Corridor targetCorridor = labyrinth.getCorridor(lever.getDoorA(), lever.getDoorB());
+        // 5. Obtém o corredor alvo diretamente da alavanca
+        Corridor targetCorridor = lever.getTargetCorridor();
 
         if (targetCorridor != null) {
-            // 4. Destranca
+            // 6. Destranca e Ativa
             targetCorridor.setLocked(false);
             lever.setActivated(true);
 
             System.out.println("CLACK! " + player.getName() + " ativou a alavanca!");
-            System.out.println("Passagem aberta entre " + lever.getDoorA() + " e " + lever.getDoorB());
+            System.out.println("Passagem aberta!");
         } else {
-            System.out.println("Erro: A alavanca aponta para um corredor inexistente.");
+            System.err.println("Erro crítico: A alavanca " + lever + " não tem corredor associado.");
         }
     }
 }

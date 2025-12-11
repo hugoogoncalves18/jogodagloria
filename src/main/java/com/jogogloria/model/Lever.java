@@ -13,11 +13,7 @@ public class Lever implements Comparable<Lever> {
     /** Identificador único da alavanca*/
     private final String id;
 
-    /** Identificador da primeira sala associada á alavanca */
-    private final String doorA;
-
-    /** Identificador da segunda sala associada á alavanca*/
-    private final String doorB;
+    private final Corridor targetCorridor;
 
     /** Estado da alavanca*/
     private boolean activated;
@@ -25,30 +21,16 @@ public class Lever implements Comparable<Lever> {
     /**
      * Cria uma nova alavanca
      * @param id O identificador único
-     * @param doorA Id de uma das salas do corredor trancado
-     * @param doorB Id da outra sala do corredor trancado
+     * @param targetCorridor
      */
-    public Lever(String id, String doorA, String doorB) {
+    public Lever(String id,  Corridor targetCorridor) {
         this.id = id;
-        this.doorA = doorA;
-        this.doorB = doorB;
+        this.targetCorridor = targetCorridor;
         this.activated = false;
     }
 
-    /**
-     * Obtém o ID da primeira sala da porta
-     * @return ID da sala A
-     */
-    public  String getDoorA() {
-        return doorA;
-    }
-
-    /**
-     * Obtém o ID da primeira sala da porta
-     * @return ID da sala B
-     */
-    public String getDoorB() {
-        return doorB;
+    public Corridor getTargetCorridor() {
+        return targetCorridor;
     }
 
     /**
@@ -73,7 +55,7 @@ public class Lever implements Comparable<Lever> {
      */
     @Override
     public String toString() {
-        return "Alavanca" + id + "Abre: " + doorA + "<->" + doorB;
+        return "Alavanca" + id ;
     }
 
     /**

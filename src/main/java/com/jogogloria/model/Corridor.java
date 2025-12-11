@@ -14,16 +14,16 @@ public class Corridor implements Comparable<Corridor> {
     private final String id;
 
     /** ID da primeira sala conectada por este corredor*/
-    private final String roomAId;
+    private final Room roomAId;
 
     /** ID da segunda sala conectada por este corredor*/
-    private final String roomBId;
+    private final Room roomBId;
 
     /** Indica se o corredor está bloqueado*/
     private boolean locked;
 
     /** Lista de eventos associados a este corredor (alavancas, boost, enigmas)*/
-    private LinkedList<String> events;
+    private final LinkedList<String> events;
 
     /** Peso do corredor para algoritmos de pathfinding*/
     private int weight;
@@ -34,7 +34,7 @@ public class Corridor implements Comparable<Corridor> {
      * @param roomAId O ID da sala de origem A
      * @param roomBId O ID da dala de destino B
      */
-    public Corridor(String id, String roomAId, String roomBId) {
+    public Corridor(String id, Room roomAId, Room roomBId) {
         this.id = id;
         this.roomAId = roomAId;
         this.roomBId = roomBId;
@@ -55,7 +55,7 @@ public class Corridor implements Comparable<Corridor> {
      * Obtém o ID da segunda sala conectada
      * @return ID da sala A
      */
-    public String getRoomAId() {
+    public Room getRoomAId() {
         return roomAId;
     }
 
@@ -63,7 +63,7 @@ public class Corridor implements Comparable<Corridor> {
      * Obtém o ID da da segunda sala conectada
      * @return ID da sala B
      */
-    public String getRoomBId() {
+    public Room getRoomBId() {
         return roomBId;
     }
 
@@ -115,7 +115,7 @@ public class Corridor implements Comparable<Corridor> {
      * @param currentRoomId O ID da sala onde o jogador está
      * @return O ID da sala vizinha, ou {@code null} se o ID fornecido não fizer parte do corredor
      */
-    public String getOtherRoomId(String currentRoomId) {
+    public Room getOtherRoomId(Room currentRoomId) {
         if (currentRoomId.equals(roomAId)) return roomBId;
         if (currentRoomId.equals(roomBId)) return roomAId;
         return null;
