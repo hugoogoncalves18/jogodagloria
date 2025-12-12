@@ -23,7 +23,6 @@ public class LeverManager {
         Room rA = lever.getRoomA();
         Room rB = lever.getRoomB();
 
-        // Validação de Segurança: A alavanca aponta para salas reais?
         if (rA == null || rB == null) {
             System.err.println("ERRO CRÍTICO: A alavanca " + lever + " aponta para salas nulas!");
             return;
@@ -34,11 +33,9 @@ public class LeverManager {
 
         System.out.println("ACTION: A tentar destrancar porta entre [" + idA + "] e [" + idB + "]...");
 
-        // Verifica se a conexão existe ANTES de tentar destrancar
-        // (Usando o teu novo método isLocked ou verificando vizinhos)
         boolean wasLocked = labyrinth.isLocked(idA, idB);
 
-        // Executa o desbloqueio
+
         labyrinth.setConnectionLocked(idA, idB, false);
         lever.setActivated(true);
 
