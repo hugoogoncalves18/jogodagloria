@@ -39,13 +39,13 @@ public class Main {
      * @param mapFilePath Caminho relativo para o ficheiro JSON do mapa
      * @param difficulty  Nível de dificuldade para os bots inteligentes
      */
-    public static void launchGame(int numHumans, int numBots, String mapFilePath, BotDifficulty difficulty) {
+    public static void launchGame(int numHumans, int numBots, String mapFilePath, BotDifficulty difficulty, boolean fogEnabled) {
         SwingUtilities.invokeLater(() -> {
             try {
                 System.out.println("A carregar mapa... " + mapFilePath);
                 Labyrinth labyrinth = MapLoader.loadLabyrinth(mapFilePath);
 
-                GameEngine engine = new GameEngine(labyrinth);
+                GameEngine engine = new GameEngine(labyrinth, fogEnabled);
                 ArrayUnorderedList<Player> allPlayers = new ArrayUnorderedList<>();
 
                 // 1. Criar Humanos

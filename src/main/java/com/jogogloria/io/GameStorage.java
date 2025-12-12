@@ -87,14 +87,14 @@ public class GameStorage {
      * @param mapPath  Caminho do mapa original (necessário para recriar o labirinto base)
      * @return Um GameEngine totalmente configurado e pronto a jogar.
      */
-    public static GameEngine loadGame(String filepath, String mapPath) throws Exception {
+    public static GameEngine loadGame(String filepath, String mapPath, boolean fogEnabled) throws Exception {
         // 1. Ler o conteúdo do ficheiro
         String json = readJsonFile(filepath);
         if (json.isEmpty()) throw new Exception("Ficheiro de save vazio ou inexistente.");
 
         // 2. Carregar o Labirinto Base (Estrutura)
         Labyrinth labyrinth = MapLoader.loadLabyrinth(mapPath);
-        GameEngine engine = new GameEngine(labyrinth);
+        GameEngine engine = new GameEngine(labyrinth, fogEnabled);
 
         // 3. Extrair Jogadores
         ArrayUnorderedList<Player> loadedPlayers = parsePlayers(json, labyrinth);

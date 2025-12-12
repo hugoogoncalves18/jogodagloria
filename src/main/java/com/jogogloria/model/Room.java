@@ -35,6 +35,9 @@ public class Room implements Comparable<Room> {
 
     private Lever lever;
 
+    /** Novo atributo para a Névoa*/
+    private boolean isVisible;
+
     /**
      * Cria uma nova sala
      * @param id ID
@@ -45,8 +48,7 @@ public class Room implements Comparable<Room> {
         this.id = id;
         this.type = type;
         this.label = label;
-        this.extraData = null;
-        this.lever = null;
+        this.isVisible = false;
 
         // Tenta extrair coordenadas do ID (formato "x-y") para facilitar a GUI
         int tempX = 0, tempY = 0;
@@ -85,14 +87,6 @@ public class Room implements Comparable<Room> {
         return label;
     }
 
-    public String getExtraData() {
-        return extraData;
-
-    }
-    public void setExtraData(String extraData) {
-        this.extraData = extraData;
-    }
-
     public void setLever(Lever lever) {
         this.lever = lever;
     }
@@ -112,6 +106,22 @@ public class Room implements Comparable<Room> {
     public boolean isSpecial() {
         return type == RoomType.RIDDLE || type == RoomType.BOOST ||
                 type == RoomType.PENALTY || type == RoomType.LEVER;
+    }
+
+    /**
+     * Verifica se é visivel, por defeito é false
+     * @return isVisible
+     */
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    /**
+     * Informa se é visivel
+     * @param visible pode ser true ou false
+     */
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 
     @Override

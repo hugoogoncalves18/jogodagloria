@@ -3,8 +3,9 @@ package com.jogogloria.gui;
 import com.jogogloria.config.GameConfig;
 import com.jogogloria.engine.BotDifficulty;
 import com.jogogloria.engine.GameEngine;
+import com.jogogloria.engine.MapEditor;
 import com.jogogloria.io.MapManager;
-import com.jogogloria.io.GameStorage; // Adicionado import para ficar limpo
+import com.jogogloria.io.GameStorage;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.iterators.Iterator;
 
@@ -23,6 +24,7 @@ import java.awt.event.ActionListener;
 public class MainMenu extends JFrame {
 
     private BotDifficulty selectedDifficulty = BotDifficulty.MEDIUM;
+    private JCheckBox chkFog;
 
     /**
      * Construtor do menu principal
@@ -33,11 +35,9 @@ public class MainMenu extends JFrame {
         setSize(400, 500); // Aumentei a altura para caber tudo confortavelmente
         setLocationRelativeTo(null);
 
-        // [LAYOUT CORRIGIDO]
-        // Usamos BorderLayout para separar o Título dos Botões
         setLayout(new BorderLayout());
 
-        // 1. Título (No Topo)
+        // Título (No Topo)
         JLabel titleLabel = new JLabel("JOGO DA GLÓRIA", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         // Margem: Cima, Esq, Baixo, Dir
@@ -51,7 +51,7 @@ public class MainMenu extends JFrame {
         // Margem lateral para os botões não tocarem na borda
         panel.setBorder(new EmptyBorder(0, 50, 40, 50));
 
-        // 2. Botão Single Player
+        // Botão Single Player
         JButton btnSingle = new JButton("Single Player (vs Bots)");
         btnSingle.setFont(new Font("Arial", Font.PLAIN, 16));
         btnSingle.setFocusPainted(false);
@@ -63,7 +63,7 @@ public class MainMenu extends JFrame {
         });
         panel.add(btnSingle);
 
-        // 3. Botão Multiplayer
+        // Botão Multiplayer
         JButton btnMulti = new JButton("Multiplayer");
         btnMulti.setFont(new Font("Arial", Font.PLAIN, 16));
         btnMulti.setFocusPainted(false);
@@ -75,7 +75,7 @@ public class MainMenu extends JFrame {
         });
         panel.add(btnMulti);
 
-        // [NOVO] Botão Carregar Jogo
+        // Botão Carregar Jogo
         JButton btnLoad = new JButton("Carregar Jogo");
         btnLoad.setFont(new Font("Arial", Font.PLAIN, 16));
         btnLoad.setFocusPainted(false);
@@ -85,16 +85,22 @@ public class MainMenu extends JFrame {
         });
         panel.add(btnLoad);
 
-        // 4. Botão de Definições (Dificuldade)
+        // Botão de Definições (Dificuldade)
         JButton btnSettings = new JButton("Definições / Dificuldade");
         btnSettings.setFont(new Font("Arial", Font.PLAIN, 16));
         btnSettings.setFocusPainted(false);
-        // Ícone de engrenagem simples com texto
         btnSettings.setText("⚙ Dificuldade Bots");
         btnSettings.addActionListener(e -> openSettingsDialog());
         panel.add(btnSettings);
 
-        // 5. Botão Editor de Mapas
+        // CheckBox névoa
+        chkFog = new JCheckBox("Ativar névoa");
+        chkFog.setFont(new Font("Arial", Font.PLAIN, 14));
+        chkFog.setHorizontalAlignment(SwingConstants.CENTER);
+        chkFog.setFocusPainted(false);
+        panel.add(chkFog);
+
+        // Botão Editor de Mapas
         JButton btnEditor = new JButton("Editor de Mapas");
         btnEditor.setFont(new Font("Arial", Font.PLAIN, 16));
         btnEditor.setFocusPainted(false);
@@ -105,9 +111,7 @@ public class MainMenu extends JFrame {
                     "O Editor foi iniciado na CONSOLA.\nVerifica a janela do terminal.");
 
             // Arranca o editor numa nova thread
-            new Thread(() -> {
-                com.jogogloria.engine.MapEditor.start();
-            }).start();
+            new Thread(MapEditor::start).start();
         });
         panel.add(btnEditor);
 
@@ -161,7 +165,7 @@ public class MainMenu extends JFrame {
             if (mapFile != null) {
                 this.dispose();
                 // Passa a dificuldade escolhida
-                Main.launchGame(1, numBots, mapFile, selectedDifficulty);
+                Main.launchGame(1, numBots, mapFile, selectedDifficulty, chkFog.isSelected());
             }
         }
     }
@@ -190,7 +194,7 @@ public class MainMenu extends JFrame {
 
             if (mapFile != null) {
                 this.dispose();
-                Main.launchGame(numHumans, 0, mapFile, selectedDifficulty);
+                Main.launchGame(numHumans, 0, mapFile, selectedDifficulty, chkFog.isSelected());
             }
         }
     }
@@ -240,7 +244,7 @@ public class MainMenu extends JFrame {
 
             this.dispose();
             // Usa o import GameStorage
-            GameEngine loadedEngine = GameStorage.loadGame("savegame.json", mapFile);
+            GameEngine loadedEngine = GameStorage.loadGame("savegame.json", mapFile, chkFog.isSelected());
 
             // Lança o jogo
             Main.launchLoadedGame(loadedEngine);

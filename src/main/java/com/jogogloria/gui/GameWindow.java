@@ -380,9 +380,10 @@ public class GameWindow extends JFrame implements KeyListener {
         this.dispose();
 
         try{
-            Labyrinth labyrint = MapLoader.loadLabyrinth(GameConfig.MAP_FILE);
+            Labyrinth labyrinth = MapLoader.loadLabyrinth(GameConfig.MAP_FILE);
 
-            GameEngine engine = new GameEngine(labyrinth);
+            boolean keepFog = this.engine.isFogEnabled();
+            GameEngine engine = new GameEngine(labyrinth, keepFog);
 
             Iterator<Player> it = allPlayers.iterator();
             while (it.hasNext()) {

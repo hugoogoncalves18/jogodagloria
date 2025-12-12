@@ -28,14 +28,16 @@ public class GameEngine {
     private boolean gameRunning;
     private int playerSpawnIndex = 0;
     private int countTurn = 1;
+    private final boolean fogEnabled;
 
     // Gestores
     private final PenaltyManager penaltyManager;
     private final LeverManager leverManager;
     private final BoostManager boostManager;
 
-    public GameEngine(Labyrinth labyrinth) {
+    public GameEngine(Labyrinth labyrinth, boolean fogEnabled) {
         this.labyrinth = labyrinth;
+        this.fogEnabled = fogEnabled;
         this.turnQueue = new LinkedQueue<>();
         this.allPlayers = new ArrayUnorderedList<>();
         this.history = new LinkedStack<>();
@@ -44,6 +46,10 @@ public class GameEngine {
         this.penaltyManager = new PenaltyManager();
         this.leverManager = new LeverManager();
         this.boostManager = new BoostManager();
+
+        if (!fogEnabled) {
+            revealAllMap();
+        }
     }
 
     // --- Gestão de Jogadores ---
@@ -68,8 +74,8 @@ public class GameEngine {
 
         if (spawnRoom != null) {
             player.move(spawnRoom);
-            // [CORRIGIDO] Usa setInitialRoom conforme refatorização do Player
             player.setInitialPosition(spawnRoom);
+            revealArea(spawnRoom);
             System.out.println("Spawn: " + player.getName() + " sala: " + spawnId);
         }
         playerSpawnIndex++;
@@ -118,6 +124,10 @@ public class GameEngine {
         countTurn++;
     }
 
+    public boolean isFogEnabled() {
+        return fogEnabled;
+    }
+
     // --- Lógica de Movimento ---
 
     /**
@@ -136,6 +146,9 @@ public class GameEngine {
             System.out.println("Movimento inválido (Parede ou Porta Trancada).");
             return false;
         }
+
+        //Revela a nova área
+        revealArea(targetRoom);
 
         //Guardar estado ants de mover
         saveSnapshot();
@@ -279,21 +292,17 @@ public class GameEngine {
     //Lógica de UNDO
 
     /**
-     *
+     *Método utilizado para guardar o estado dos jogadores e do jogo
      */
     public void saveSnapshot() {
-        //Guarda quem é o jogador atual
         Player current = getCurrentPlayer();
         GameSnapshot snapshot = new GameSnapshot(current);
-
-        //Guarda os estado dos jogadores
         Iterator<Player> it = allPlayers.iterator();
         while (it.hasNext()) {
             Player p = it.next();
             snapshot.playerState.addToRear(new GameSnapshot.PlayerMoment(p));
         }
 
-        //Guarda as referências das alavancas ativadas
         Iterator<Room> roomIt = labyrinth.getRoomsIterator();
 
         while ((roomIt.hasNext())) {
@@ -406,6 +415,36 @@ public class GameEngine {
             Player p = it.next();
             if (p == targetCurrent) break;
             turnQueue.enqueue(p);
+        }
+    }
+
+    /**
+     * Método auxiliar para revelar tudo(caso a checkbox esteja ativa)
+     */
+    private  void revealAllMap() {
+        Iterator<Room> it = labyrinth.getRoomsIterator();
+        while (it.hasNext()) {
+            it.next().setVisible(true);
+        }
+    }
+
+    /**
+     * Revela a área baseada em grafos
+     * @param centerRoom
+     */
+    private void revealArea(Room centerRoom) {
+        if (centerRoom == null) return;
+
+        centerRoom.setVisible(true); //Revela a própria sala
+        ArrayUnorderedList<String> neighbors = labyrinth.getNeighbors(centerRoom.getId());
+        Iterator<String> it = neighbors.iterator();
+
+        while (it.hasNext()) {
+            String neighborId = it.next();
+            Room neighbor = labyrinth.getRoom(neighborId);
+            if (neighbor != null) {
+                neighbor.setVisible(true);
+            }
         }
     }
 

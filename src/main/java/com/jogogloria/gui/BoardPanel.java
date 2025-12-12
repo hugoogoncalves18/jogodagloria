@@ -67,6 +67,16 @@ public class BoardPanel extends JPanel {
         int py = y * GameConfig.CELL_SIZE;
         int size = GameConfig.CELL_SIZE;
 
+        //Logica de névoa
+        if (!room.isVisible()) {
+            g2.setColor(Color.BLACK);
+            g2.fillRect(px, py, size, size);
+            //Borda cinza para se perceber a grelha
+            g2.setColor(new Color(30,30,30));
+            g2.drawRect(px, py, size, size);
+            return;
+        }
+
         // --- 1. Desenhar Imagem de Fundo ---
         String typeKey = room.getType().toString();
         BufferedImage img = imageManager.getImage(typeKey);
