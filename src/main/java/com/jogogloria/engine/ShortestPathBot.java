@@ -7,6 +7,8 @@ import com.jogogloria.model.Room;
 import com.example.Biblioteca.iterators.Iterator;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 
+import java.util.Random;
+
 /**
  * Implementação de uma estratégia de bot inteligente.
  *
@@ -14,6 +16,23 @@ import com.example.Biblioteca.lists.ArrayUnorderedList;
  * @version 2.0
  */
 public class ShortestPathBot implements BotStrategy {
+
+    private final BotDifficulty difficulty;
+    private final Random random;
+
+    /**
+     * Construtor de ShortestPathDifficulty
+     * @param difficulty dificuldade do Bot
+     */
+    public ShortestPathBot(BotDifficulty difficulty) {
+        this.difficulty = difficulty;
+        this.random = new Random();
+    }
+
+    //construtor padrão assume o nivel HARD
+    public ShortestPathBot() {
+        this(BotDifficulty.HARD);
+    }
 
     /**
      * Calcula o próximo movimento do bot com base no estado do jogo.
@@ -25,30 +44,47 @@ public class ShortestPathBot implements BotStrategy {
      */
     @Override
     public String nextMove(Labyrinth labyrinth, Player player, int rollValue) {
-        String currentRoomId = player.getCurrentRoom().getId();
-        String treasureRoomId = labyrinth.getTreasureRoom();
+        String currentRoom = player.getCurrentRoom().getId();
+        String treasureRoom = labyrinth.getTreasureRoom();
 
-        if (currentRoomId.equals(treasureRoomId)) {
-            return null; // Já ganhou
+        //Verifica erro humano (Dificuldade)
+        if (shouldMakeMistake()) {
+            System.out.println("Bot (" + difficulty + ") distraiu-se e jogou aleatoriamente");
+            return getAnyValidNeighbor(labyrinth, currentRoom);
         }
 
         // --- PLANO A: Tentar ir direto ao Tesouro ---
-        if (isPathClear(labyrinth, currentRoomId, treasureRoomId)) {
-            String nextStep = getNextStep(labyrinth, currentRoomId, treasureRoomId);
+        if (isPathClear(labyrinth, currentRoom, treasureRoom)) {
+            String nextStep = getNextStep(labyrinth, currentRoom, treasureRoom);
             if (nextStep != null) return nextStep;
         }
 
         // --- PLANO B: Caminho bloqueado? Usar BFS para achar a alavanca mais perto! ---
         System.out.println("Bot " + player.getName() + ": Caminho bloqueado. A usar BFS para encontrar alavancas...");
 
-        String nextStepToLever = getMoveToLeverBFS(labyrinth, currentRoomId);
+        String nextStepToLever = getMoveToLeverBFS(labyrinth, currentRoom);
 
         if (nextStepToLever != null) {
             return nextStepToLever;
         }
 
         // --- PLANO C: Fallback (Movimento de segurança) ---
-        return getAnyValidNeighbor(labyrinth, currentRoomId);
+        return getAnyValidNeighbor(labyrinth, currentRoom);
+    }
+
+    /**
+     * Vai sortear a dificuldade que o bot vai atuar
+     * @return Int aleatório
+     */
+    private  boolean shouldMakeMistake() {
+        int chance = 0;
+        switch (difficulty) {
+            case EASY: chance = 50; break;
+            case MEDIUM: chance = 25; break;
+            case HARD:
+                break;
+        }
+        return random.nextInt(100) < chance;
     }
 
     /**

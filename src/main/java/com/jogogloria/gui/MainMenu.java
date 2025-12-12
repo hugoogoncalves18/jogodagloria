@@ -1,8 +1,8 @@
 package com.jogogloria.gui;
 
 import com.jogogloria.config.GameConfig;
-import com.jogogloria.gui.Main;
-import com.jogogloria.io.MapManager; // Importante para listar os mapas
+import com.jogogloria.engine.BotDifficulty; // Importante
+import com.jogogloria.io.MapManager;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.iterators.Iterator;
 
@@ -12,25 +12,33 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Janela do menu principal do jogo
+ * Janela do menu principal do jogo.
+ * <p>
+ * ATUALIZADO:
+ * - Inclui seletor de Dificuldade para os Bots.
+ * </p>
  *
  * @author Hugo Gonçalves
- * @version 1.0
+ * @version 2.0
  */
 public class MainMenu extends JFrame {
+
+    // Guarda a dificuldade selecionada (Padrão: Médio)
+    private BotDifficulty selectedDifficulty = BotDifficulty.MEDIUM;
+
     /**
      * Construtor do menu principal
      */
     public MainMenu() {
         setTitle("Jogo da Glória - Menu Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 350); // Aumentei um pouco a altura
+        setSize(400, 420); // Aumentei a altura para caber o novo botão
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
 
         JPanel panel = new JPanel();
-        // Alterado para 4 linhas para caberem os 3 botões + Título
-        panel.setLayout(new GridLayout(4, 1, 10, 10));
+        // Alterado para 5 linhas: Título + Single + Multi + Definições + Editor
+        panel.setLayout(new GridLayout(5, 1, 10, 10));
 
         // 1. Título
         JLabel titleLabel = new JLabel("JOGO DA GLÓRIA", SwingConstants.CENTER);
@@ -59,14 +67,22 @@ public class MainMenu extends JFrame {
         });
         panel.add(btnMulti);
 
-        // 4. Botão Editor de Mapas
+        // 4. Botão de Definições (Dificuldade) [NOVO]
+        JButton btnSettings = new JButton("Definições / Dificuldade");
+        btnSettings.setFont(new Font("Arial", Font.PLAIN, 16));
+        // Ícone de engrenagem simples com texto
+        btnSettings.setText("⚙Dificuldade Bots");
+        btnSettings.addActionListener(e -> openSettingsDialog());
+        panel.add(btnSettings);
+
+        // 5. Botão Editor de Mapas
         JButton btnEditor = new JButton("Editor de Mapas");
         btnEditor.setFont(new Font("Arial", Font.PLAIN, 16));
         btnEditor.addActionListener(e -> {
             this.dispose(); // Fecha o menu
 
             JOptionPane.showMessageDialog(null,
-                    "O Editor foi iniciado na CONSOLA.");
+                    "O Editor foi iniciado na CONSOLA.\nVerifica a janela do terminal.");
 
             // Arranca o editor numa nova thread
             new Thread(() -> {
@@ -76,6 +92,27 @@ public class MainMenu extends JFrame {
         panel.add(btnEditor);
 
         add(panel);
+    }
+
+    /**
+     * Abre janela para escolher a dificuldade dos Bots.
+     */
+    private void openSettingsDialog() {
+        BotDifficulty[] possibilities = BotDifficulty.values();
+
+        BotDifficulty choice = (BotDifficulty) JOptionPane.showInputDialog(
+                this,
+                "Escolha a inteligência artificial dos Bots:",
+                "Definições",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                possibilities,
+                selectedDifficulty);
+
+        if (choice != null) {
+            this.selectedDifficulty = choice;
+            JOptionPane.showMessageDialog(this, "Dificuldade alterada para: " + choice);
+        }
     }
 
     /**
@@ -102,8 +139,8 @@ public class MainMenu extends JFrame {
 
             if (mapFile != null) {
                 this.dispose();
-                // Chama o launchGame com o mapa escolhido
-                Main.launchGame(1, numBots, mapFile);
+                // Passa a dificuldade escolhida
+                Main.launchGame(1, numBots, mapFile, selectedDifficulty);
             }
         }
     }
@@ -132,8 +169,7 @@ public class MainMenu extends JFrame {
 
             if (mapFile != null) {
                 this.dispose();
-                // Chama o launchGame com o mapa escolhido
-                Main.launchGame(numHumans, 0, mapFile);
+                Main.launchGame(numHumans, 0, mapFile, selectedDifficulty);
             }
         }
     }
@@ -148,10 +184,9 @@ public class MainMenu extends JFrame {
         if (mapas.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "Nenhum mapa encontrado na pasta 'maps'!\nVou usar o mapa padrão.");
-            return GameConfig.MAP_FILE; // Fallback
+            return GameConfig.MAP_FILE;
         }
 
-        // 2. Converter a tua lista personalizada para Array de Strings (para o JOptionPane)
         String[] opcoesMapas = new String[mapas.size()];
         Iterator<String> it = mapas.iterator();
         int i = 0;
@@ -159,7 +194,7 @@ public class MainMenu extends JFrame {
             opcoesMapas[i++] = it.next();
         }
 
-        // 3. Mostrar janela de escolha (ComboBox)
+        // 3. Mostrar janela de escolha
         String escolha = (String) JOptionPane.showInputDialog(
                 this,
                 "Escolhe o campo de batalha:",
