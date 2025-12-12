@@ -11,20 +11,26 @@ import com.example.Biblioteca.iterators.Iterator;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /**
  * Janela do menu principal do jogo.
  *
  * @author Hugo Gonçalves
- * @version 2.0
+ * @version 3.0
  */
 public class MainMenu extends JFrame {
 
     private BotDifficulty selectedDifficulty = BotDifficulty.MEDIUM;
     private JCheckBox chkFog;
+    private Image backgroundImage;
+    private Image iconImage;
 
     /**
      * Construtor do menu principal
@@ -32,29 +38,38 @@ public class MainMenu extends JFrame {
     public MainMenu() {
         setTitle("Jogo da Glória - Menu Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 500); // Aumentei a altura para caber tudo confortavelmente
+        setSize(500, 650);
         setLocationRelativeTo(null);
+        setResizable(false);
 
-        setLayout(new BorderLayout());
+        // Carrega imagens do disco
+        loadImages();
+
+        // Define o Favicon
+        if (iconImage != null) {
+            setIconImage(iconImage);
+        }
+
+        // Define o painel de fundo personalizado
+        BackgroundPanel mainPanel = new BackgroundPanel();
+        mainPanel.setLayout(new BorderLayout());
+        setContentPane(mainPanel);
 
         // Título (No Topo)
         JLabel titleLabel = new JLabel("JOGO DA GLÓRIA", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        // Margem: Cima, Esq, Baixo, Dir
-        titleLabel.setBorder(new EmptyBorder(30, 0, 20, 0));
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 36));
+        titleLabel.setForeground(new Color(255, 215, 0));
+        titleLabel.setBorder(new EmptyBorder(40, 0, 20, 0));
         add(titleLabel, BorderLayout.NORTH);
 
         // Painel Central para os Botões
         JPanel panel = new JPanel();
-        // 5 Linhas (uma para cada botão), 1 Coluna, espaçamento 10px
-        panel.setLayout(new GridLayout(5, 1, 10, 15));
-        // Margem lateral para os botões não tocarem na borda
-        panel.setBorder(new EmptyBorder(0, 50, 40, 50));
+        panel.setOpaque(false);
+        panel.setLayout(new GridLayout(6, 1, 10, 15));
+        panel.setBorder(new EmptyBorder(0, 80, 40, 80));
 
         // Botão Single Player
-        JButton btnSingle = new JButton("Single Player (vs Bots)");
-        btnSingle.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnSingle.setFocusPainted(false);
+        JButton btnSingle = createStyledButton("Single Player (vs Bots)");
         btnSingle.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -64,9 +79,7 @@ public class MainMenu extends JFrame {
         panel.add(btnSingle);
 
         // Botão Multiplayer
-        JButton btnMulti = new JButton("Multiplayer");
-        btnMulti.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnMulti.setFocusPainted(false);
+        JButton btnMulti = createStyledButton("Multiplayer");
         btnMulti.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,47 +89,94 @@ public class MainMenu extends JFrame {
         panel.add(btnMulti);
 
         // Botão Carregar Jogo
-        JButton btnLoad = new JButton("Carregar Jogo");
-        btnLoad.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnLoad.setFocusPainted(false);
-        btnLoad.setBackground(new Color(240, 220, 100)); // Amarelo suave
+        JButton btnLoad = createStyledButton("Carregar Jogo");
+        btnLoad.setBackground(new Color(240, 210, 80));
+        btnLoad.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(180, 140, 20), 2),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
         btnLoad.addActionListener(e -> {
             loadSavedGame();
         });
         panel.add(btnLoad);
 
         // Botão de Definições (Dificuldade)
-        JButton btnSettings = new JButton("Definições / Dificuldade");
-        btnSettings.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnSettings.setFocusPainted(false);
-        btnSettings.setText("⚙ Dificuldade Bots");
+        JButton btnSettings = createStyledButton("⚙ Dificuldade Bots");
         btnSettings.addActionListener(e -> openSettingsDialog());
         panel.add(btnSettings);
 
-        // CheckBox névoa
+
+        JPanel fogPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        fogPanel.setOpaque(false);
+
         chkFog = new JCheckBox("Ativar névoa");
-        chkFog.setFont(new Font("Arial", Font.PLAIN, 14));
-        chkFog.setHorizontalAlignment(SwingConstants.CENTER);
+        chkFog.setFont(new Font("SansSerif", Font.BOLD, 14));
+        chkFog.setForeground(Color.WHITE);
+        chkFog.setOpaque(false);
         chkFog.setFocusPainted(false);
-        panel.add(chkFog);
+
+        fogPanel.add(chkFog);
+        panel.add(fogPanel);
 
         // Botão Editor de Mapas
-        JButton btnEditor = new JButton("Editor de Mapas");
-        btnEditor.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnEditor.setFocusPainted(false);
+        JButton btnEditor = createStyledButton("Editor de Mapas");
         btnEditor.addActionListener(e -> {
-            this.dispose(); // Fecha o menu
+            this.dispose();
 
             JOptionPane.showMessageDialog(null,
                     "O Editor foi iniciado na CONSOLA.\nVerifica a janela do terminal.");
 
-            // Arranca o editor numa nova thread
             new Thread(MapEditor::start).start();
         });
         panel.add(btnEditor);
 
-        // Adiciona o painel de botões ao Centro da janela
         add(panel, BorderLayout.CENTER);
+    }
+
+    /**
+     * Carrega as imagens necessárias (Fundo e Ícone).
+     */
+    private void loadImages() {
+        try {
+            backgroundImage = ImageIO.read(new File("resources/menu_background.png"));
+            iconImage = ImageIO.read(new File("resources/game_icon.png"));
+        } catch (IOException e) {
+            System.err.println("Imagens de menu não encontradas (usando padrão).");
+        }
+    }
+
+    /**
+     * Cria um botão com estilo visual personalizado (RPG/Pedra).
+     */
+    private JButton createStyledButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Serif", Font.BOLD, 18));
+        btn.setBackground(new Color(220, 220, 220));
+        btn.setForeground(new Color(50, 50, 50));
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btn.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(100, 100, 100), 2),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        return btn;
+    }
+
+    /**
+     * Painel interno para desenhar a imagem de fundo.
+     */
+    private class BackgroundPanel extends JPanel {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (backgroundImage != null) {
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            } else {
+                g.setColor(new Color(50, 50, 60));
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+        }
     }
 
     /**
@@ -203,7 +263,6 @@ public class MainMenu extends JFrame {
      * Exibe uma janela de diálogo para o utilizador escolher um dos mapas disponiveis
      */
     private String escolherMapa() {
-        // 1. Obter lista de mapas da pasta usando o MapManager
         ArrayUnorderedList<String> mapas = MapManager.listMaps();
 
         if (mapas.isEmpty()) {
@@ -219,7 +278,6 @@ public class MainMenu extends JFrame {
             opcoesMapas[i++] = it.next();
         }
 
-        // 3. Mostrar janela de escolha
         String escolha = (String) JOptionPane.showInputDialog(
                 this,
                 "Escolhe o campo de batalha:",
@@ -230,10 +288,8 @@ public class MainMenu extends JFrame {
                 opcoesMapas[0]
         );
 
-        // Se cancelar, retorna null
         if (escolha == null) return null;
 
-        // Constrói o caminho completo (assumindo que MapManager lê da pasta 'maps')
         return "maps/" + escolha;
     }
 
@@ -243,16 +299,13 @@ public class MainMenu extends JFrame {
             if (mapFile == null) return;
 
             this.dispose();
-            // Usa o import GameStorage
             GameEngine loadedEngine = GameStorage.loadGame("savegame.json", mapFile, chkFog.isSelected());
 
-            // Lança o jogo
             Main.launchLoadedGame(loadedEngine);
 
         } catch (Exception e) {
-            e.printStackTrace(); // Ajuda a ver o erro na consola
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Erro ao carregar save: " + e.getMessage());
-            // Reabre o menu se falhar
             new MainMenu().setVisible(true);
         }
     }
