@@ -1,29 +1,27 @@
 package com.jogogloria.gui;
 
 import com.jogogloria.config.GameConfig;
-import com.jogogloria.engine.BotDifficulty; // Importante
+import com.jogogloria.engine.BotDifficulty;
+import com.jogogloria.engine.GameEngine;
 import com.jogogloria.io.MapManager;
+import com.jogogloria.io.GameStorage; // Adicionado import para ficar limpo
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.iterators.Iterator;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
  * Janela do menu principal do jogo.
- * <p>
- * ATUALIZADO:
- * - Inclui seletor de Dificuldade para os Bots.
- * </p>
  *
  * @author Hugo Gonçalves
  * @version 2.0
  */
 public class MainMenu extends JFrame {
 
-    // Guarda a dificuldade selecionada (Padrão: Médio)
     private BotDifficulty selectedDifficulty = BotDifficulty.MEDIUM;
 
     /**
@@ -32,22 +30,31 @@ public class MainMenu extends JFrame {
     public MainMenu() {
         setTitle("Jogo da Glória - Menu Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 420); // Aumentei a altura para caber o novo botão
+        setSize(400, 500); // Aumentei a altura para caber tudo confortavelmente
         setLocationRelativeTo(null);
-        setLayout(new GridBagLayout());
 
-        JPanel panel = new JPanel();
-        // Alterado para 5 linhas: Título + Single + Multi + Definições + Editor
-        panel.setLayout(new GridLayout(5, 1, 10, 10));
+        // [LAYOUT CORRIGIDO]
+        // Usamos BorderLayout para separar o Título dos Botões
+        setLayout(new BorderLayout());
 
-        // 1. Título
+        // 1. Título (No Topo)
         JLabel titleLabel = new JLabel("JOGO DA GLÓRIA", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        panel.add(titleLabel);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        // Margem: Cima, Esq, Baixo, Dir
+        titleLabel.setBorder(new EmptyBorder(30, 0, 20, 0));
+        add(titleLabel, BorderLayout.NORTH);
+
+        // Painel Central para os Botões
+        JPanel panel = new JPanel();
+        // 5 Linhas (uma para cada botão), 1 Coluna, espaçamento 10px
+        panel.setLayout(new GridLayout(5, 1, 10, 15));
+        // Margem lateral para os botões não tocarem na borda
+        panel.setBorder(new EmptyBorder(0, 50, 40, 50));
 
         // 2. Botão Single Player
         JButton btnSingle = new JButton("Single Player (vs Bots)");
         btnSingle.setFont(new Font("Arial", Font.PLAIN, 16));
+        btnSingle.setFocusPainted(false);
         btnSingle.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,6 +66,7 @@ public class MainMenu extends JFrame {
         // 3. Botão Multiplayer
         JButton btnMulti = new JButton("Multiplayer");
         btnMulti.setFont(new Font("Arial", Font.PLAIN, 16));
+        btnMulti.setFocusPainted(false);
         btnMulti.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,17 +75,29 @@ public class MainMenu extends JFrame {
         });
         panel.add(btnMulti);
 
-        // 4. Botão de Definições (Dificuldade) [NOVO]
+        // [NOVO] Botão Carregar Jogo
+        JButton btnLoad = new JButton("Carregar Jogo");
+        btnLoad.setFont(new Font("Arial", Font.PLAIN, 16));
+        btnLoad.setFocusPainted(false);
+        btnLoad.setBackground(new Color(240, 220, 100)); // Amarelo suave
+        btnLoad.addActionListener(e -> {
+            loadSavedGame();
+        });
+        panel.add(btnLoad);
+
+        // 4. Botão de Definições (Dificuldade)
         JButton btnSettings = new JButton("Definições / Dificuldade");
         btnSettings.setFont(new Font("Arial", Font.PLAIN, 16));
+        btnSettings.setFocusPainted(false);
         // Ícone de engrenagem simples com texto
-        btnSettings.setText("⚙Dificuldade Bots");
+        btnSettings.setText("⚙ Dificuldade Bots");
         btnSettings.addActionListener(e -> openSettingsDialog());
         panel.add(btnSettings);
 
         // 5. Botão Editor de Mapas
         JButton btnEditor = new JButton("Editor de Mapas");
         btnEditor.setFont(new Font("Arial", Font.PLAIN, 16));
+        btnEditor.setFocusPainted(false);
         btnEditor.addActionListener(e -> {
             this.dispose(); // Fecha o menu
 
@@ -91,7 +111,8 @@ public class MainMenu extends JFrame {
         });
         panel.add(btnEditor);
 
-        add(panel);
+        // Adiciona o painel de botões ao Centro da janela
+        add(panel, BorderLayout.CENTER);
     }
 
     /**
@@ -210,5 +231,25 @@ public class MainMenu extends JFrame {
 
         // Constrói o caminho completo (assumindo que MapManager lê da pasta 'maps')
         return "maps/" + escolha;
+    }
+
+    private void loadSavedGame() {
+        try{
+            String mapFile = escolherMapa();
+            if (mapFile == null) return;
+
+            this.dispose();
+            // Usa o import GameStorage
+            GameEngine loadedEngine = GameStorage.loadGame("savegame.json", mapFile);
+
+            // Lança o jogo
+            Main.launchLoadedGame(loadedEngine);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Ajuda a ver o erro na consola
+            JOptionPane.showMessageDialog(this, "Erro ao carregar save: " + e.getMessage());
+            // Reabre o menu se falhar
+            new MainMenu().setVisible(true);
+        }
     }
 }

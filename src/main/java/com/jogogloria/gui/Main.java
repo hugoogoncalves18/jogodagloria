@@ -1,21 +1,19 @@
 package com.jogogloria.gui;
 
-import com.jogogloria.engine.*; // Importa ShortestPathBot, CowardBot, ExplorerBot, etc.
+import com.jogogloria.engine.*;
 import com.jogogloria.io.MapLoader;
 import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Player;
+
 import com.example.Biblioteca.lists.ArrayUnorderedList;
+import com.example.Biblioteca.iterators.Iterator;
 
 import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
 
+
 /**
  * Ponto de entrada principal da aplicação Jogo da Glória.
- * <p>
- * ATUALIZADO:
- * - Distribui estratégias diferentes (Medroso, Explorador, Inteligente)
- * dependendo do número de bots selecionados.
- * </p>
  *
  * @author Hugo Gonçalves
  * @version 2.0
@@ -89,6 +87,33 @@ public class Main {
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Erro ao iniciar jogo: " + e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Inicia o jogo a partir de um Engine carregado (Load Game).
+     */
+    public static void launchLoadedGame(GameEngine engine) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                ArrayUnorderedList<Player> allPlayers = new ArrayUnorderedList<>();
+                Iterator<Player> it = engine.getAllPlayersIterator();
+                while(it.hasNext()) {
+                    allPlayers.addToRear(it.next());
+                }
+
+                // Acesso ao Labirinto (Adiciona getLabyrinth() no Engine se não tiveres)
+                Labyrinth labyrinth = engine.getLabyrinth();
+
+                GameWindow window = new GameWindow(labyrinth, engine, allPlayers, 20, 20);
+                window.setVisible(true);
+
+                System.out.println("Jogo carregado com sucesso!");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Erro ao iniciar jogo carregado: " + e.getMessage());
             }
         });
     }

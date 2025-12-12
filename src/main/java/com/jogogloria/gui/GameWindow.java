@@ -10,6 +10,7 @@ import com.jogogloria.config.GameConfig;
 import com.jogogloria.engine.GameEngine;
 import com.jogogloria.engine.RiddleManager;
 import com.jogogloria.io.MapLoader;
+import com.jogogloria.io.GameStorage;
 import com.jogogloria.model.*;
 
 import javax.swing.*;
@@ -23,7 +24,7 @@ import java.awt.event.ActionEvent;
  * Janela principal onde decorre a partida do jogo
  *
  * @author Hugo Gonçalves
- * @version 1.0
+ * @version 3.0
  */
 public class GameWindow extends JFrame implements KeyListener {
 
@@ -59,7 +60,7 @@ public class GameWindow extends JFrame implements KeyListener {
         this.boardPanel = new BoardPanel(labyrinth, allPlayers, rows, cols);
         add(boardPanel, BorderLayout.CENTER);
 
-        this.statusLabel = new JLabel("Bem-vindo! Prime ESPAÇO para rolar o dado.");
+        this.statusLabel = new JLabel("Bem-vindo! Prime ESPAÇO para rolar o dado. [Z] Voltar atrás, [S] Gravar");
         this.statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
         this.statusLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(statusLabel, BorderLayout.SOUTH);
@@ -103,6 +104,7 @@ public class GameWindow extends JFrame implements KeyListener {
                 txt += " | Rolar Dado (Espaço)";
             }
 
+            txt += " || [Z] Voltar Atrás  [S] Gravar";
             statusLabel.setText(txt);
 
             if (current.isBot()) {
@@ -157,6 +159,24 @@ public class GameWindow extends JFrame implements KeyListener {
      */
     @Override
     public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+            GameStorage.saveGame(engine, "savegame.json");
+            JOptionPane.showMessageDialog(this, "jogo guardado com sucesso em savegame.json");
+            return;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_Z) {
+           boolean success = engine.undo();
+           if (success) {
+               boardPanel.repaint();
+               updateStatus();
+               System.out.println("Voltaste atrás");
+           } else {
+               JOptionPane.showMessageDialog(this, "Não podes recuar mais");
+           }
+           return;
+        }
+
         if (!engine.isGameRunning()) return;
 
         Player current = engine.getCurrentPlayer();

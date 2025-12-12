@@ -10,7 +10,7 @@ import com.example.Biblioteca.iterators.Iterator;
  * Labyrinth implementado com Grafo Pesado (WeightedGraph).
  *
  * @author Hugo Gonçalves
- * @version 4.0
+ * @version 5.0
  */
 public class Labyrinth {
 
@@ -26,6 +26,9 @@ public class Labyrinth {
     // Mapa auxiliar para guardar os dados das Salas (Room)
     private final SimpleMap<String, Room> roomMap;
 
+    //Lista para iterar sobre as salas de forma sequencial
+    private final ArrayUnorderedList<Room> allRooms;
+
     // Auxiliares de Jogo
     private final ArrayUnorderedList<String> entryPoints;
     private String startRoomId;
@@ -34,6 +37,7 @@ public class Labyrinth {
     public Labyrinth() {
         this.graphStructure = new ExtendedWeightedGraph<>();
         this.roomMap = new SimpleMap<>();
+        this.allRooms = new ArrayUnorderedList<>();
         this.entryPoints = new ArrayUnorderedList<>();
     }
 
@@ -47,7 +51,15 @@ public class Labyrinth {
         if (!roomMap.containsKey(id)) {
             roomMap.put(id, room);
             graphStructure.addVertex(id);
+            allRooms.addToRear(room);
         }
+    }
+
+    /**
+     * Método essencial para o GameEngine percorrer as alavancas
+     */
+    public Iterator<Room> getRoomsIterator() {
+        return allRooms.iterator();
     }
 
     /**

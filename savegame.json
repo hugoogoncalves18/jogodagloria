@@ -1,0 +1,9 @@
+{
+  "currentPlayer": "p2",
+  "activatedLevers": [],
+  "players": [
+    { "id": "p1", "name": "Jogador 1", "roomId": "5-0", "moves": 0, "skips": 0, "boosts": 0, "isBot": false },
+    { "id": "p2", "name": "Jogador 2", "roomId": "18-0", "moves": 0, "skips": 0, "boosts": 0, "isBot": false },
+    { "id": "p3", "name": "Jogador 3", "roomId": "1-19", "moves": 0, "skips": 0, "boosts": 0, "isBot": false }
+  ]
+}

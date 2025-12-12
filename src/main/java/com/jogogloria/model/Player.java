@@ -25,7 +25,7 @@ public class Player implements Comparable<Player> {
     private Room initialRoom;
 
     /** A estratégia de IA do bot */
-    private final BotStrategy botStrategy;
+    private BotStrategy botStrategy;
 
     /** ID da sala onde o jogador se encontra atualmente. */
     private Room currentRoom;
@@ -108,6 +108,15 @@ public class Player implements Comparable<Player> {
      */
     public BotStrategy getBotStrategy() {
         return botStrategy;
+    }
+
+    /**
+     * Define a estratégia do bot
+     * Necessário para carregamento do jogo
+     * @param botStrategy Nova estratégia a aplicar
+     */
+    public void setBotStrategy(BotStrategy botStrategy) {
+        this.botStrategy = botStrategy;
     }
 
     public int getSkipTurns() {
