@@ -12,7 +12,6 @@ import com.jogogloria.engine.RiddleManager;
 import com.jogogloria.io.MapLoader;
 import com.jogogloria.model.*;
 
-
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;

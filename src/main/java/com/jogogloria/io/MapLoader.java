@@ -3,7 +3,6 @@ package com.jogogloria.io;
 import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Lever;
 import com.jogogloria.model.Room;
-import com.jogogloria.model.Corridor;
 import com.jogogloria.model.Room.RoomType;
 
 import java.io.BufferedReader;
@@ -14,7 +13,7 @@ import java.io.IOException;
  * Responsável pela construção do labirinto a partir de ficheiro de config JSON.
  *
  * @author Hugo Gonçalves
- * @version 2.0
+ * @version 3.0
  */
 public class MapLoader {
 
@@ -29,8 +28,6 @@ public class MapLoader {
 
     /**
      * Carrega um labirinto completo a partir de um ficheiro JSON
-     * @param jsonFilePath Caminho para o ficheiro do mapa
-     * @return Objeto {@link Labyrinth} pronto a jogar
      */
     public static Labyrinth loadLabyrinth(String jsonFilePath) {
         String jsonContent = readJsonFile(jsonFilePath);
@@ -41,7 +38,7 @@ public class MapLoader {
 
         int[][] grid = parseGridData(jsonContent);
 
-        // 1. Cria Salas e Corredores (Estrutura)
+        // 1. Cria Salas e Conexões (Estrutura do Grafo)
         Labyrinth labyrinth = createLabyrinthFromGrid(grid);
 
         // 2. Aplica Lógica (Trancas e Alavancas)
@@ -90,6 +87,9 @@ public class MapLoader {
         return grid;
     }
 
+    /**
+     * Aplica trancas às arestas do grafo.
+     */
     private static void applyLocks(String jsonContent, Labyrinth labyrinth) {
         int keyIndex = jsonContent.indexOf("\"locked\"");
         if (keyIndex == -1) return;
@@ -109,19 +109,17 @@ public class MapLoader {
             String roomB = extractValue(item, "roomB");
 
             if (roomA != null && roomB != null) {
-                // Obtém o objeto Corridor e tranca-o
-                Corridor c = labyrinth.getCorridor(roomA, roomB);
-                if (c != null) {
-                    c.setLocked(true);
-                    count++;
-                }
+                // [REFATORADO] Em vez de buscar um objeto Corridor,
+                // altera o peso da aresta no grafo.
+                labyrinth.setConnectionLocked(roomA, roomB, true);
+                count++;
             }
         }
         System.out.println("Portas trancadas: " + count);
     }
 
     /**
-     * Cria alavancas associando objetos Corridor e Room.
+     * Cria alavancas e associa-as às salas.
      */
     private static void applyLevers(String jsonContent, Labyrinth labyrinth) {
         int keyIndex = jsonContent.indexOf("\"levers\"");
@@ -140,19 +138,17 @@ public class MapLoader {
         for (String item : items) {
             String roomId = extractValue(item, "roomId");
             String id = extractValue(item, "id");
-            String doorA = extractValue(item, "doorRoomA");
-            String doorB = extractValue(item, "doorRoomB");
+            String doorAId = extractValue(item, "doorRoomA");
+            String doorBId = extractValue(item, "doorRoomB");
 
-            if (roomId != null && doorA != null && doorB != null) {
-                // 1. Obter a Sala onde fica a alavanca
+            if (roomId != null && doorAId != null && doorBId != null) {
                 Room room = labyrinth.getRoom(roomId);
+                Room rA = labyrinth.getRoom(doorAId);
+                Room rB = labyrinth.getRoom(doorBId);
 
-                // 2. Obter o Corredor alvo (usando os IDs do JSON)
-                Corridor targetCorridor = labyrinth.getCorridor(doorA, doorB);
-
-                if (room != null && targetCorridor != null) {
-                    // 3. Criar a Lever com referência ao Corredor
-                    Lever lever = new Lever(id != null ? id : "L" + count, targetCorridor);
+                if (room != null && rA != null && rB != null) {
+                    // 3. Criar a Lever com referências às Salas alvo
+                    Lever lever = new Lever(id != null ? id : "L" + count, rA, rB);
 
                     // 4. Guardar a Lever dentro da Sala
                     room.setLever(lever);
@@ -187,7 +183,7 @@ public class MapLoader {
     }
 
     /**
-     * Passa objetos Room para o addCorridor.
+     * Cria o grafo de conexões.
      */
     private static Labyrinth createLabyrinthFromGrid(int[][] gridData) {
         Labyrinth labyrinth = new Labyrinth();
@@ -195,7 +191,7 @@ public class MapLoader {
         if (rows == 0) return labyrinth;
         int cols = gridData[0].length;
 
-        // FASE 1: Criar todas as Salas
+        // FASE 1: Criar todas as Salas (Vértices)
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 int code = gridData[y][x];
@@ -211,10 +207,9 @@ public class MapLoader {
             }
         }
 
-        // FASE 2: Criar Corredores (ligando as salas já existentes)
+        // FASE 2: Criar Conexões (Arestas)
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                // Obtém o objeto Sala atual
                 Room current = labyrinth.getRoomAt(x, y);
                 if (current == null) continue;
 
@@ -222,7 +217,8 @@ public class MapLoader {
                 if (y > 0) {
                     Room up = labyrinth.getRoomAt(x, y - 1);
                     if (up != null) {
-                        labyrinth.addCorridor(current, up);
+                        // [REFATORADO] Adiciona conexão ao grafo
+                        labyrinth.addConnection(current, up);
                     }
                 }
 
@@ -230,7 +226,8 @@ public class MapLoader {
                 if (x > 0) {
                     Room left = labyrinth.getRoomAt(x - 1, y);
                     if (left != null) {
-                        labyrinth.addCorridor(current, left);
+                        // [REFATORADO] Adiciona conexão ao grafo
+                        labyrinth.addConnection(current, left);
                     }
                 }
             }

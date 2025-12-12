@@ -15,8 +15,8 @@ import com.example.Biblioteca.stacks.LinkedStack;
  */
 public class RiddleManager {
 
-    private ArrayUnorderedList<Riddle> availableRiddles;
-    private LinkedStack<Riddle> usedRiddles;
+    private final ArrayUnorderedList<Riddle> availableRiddles;
+    private final LinkedStack<Riddle> usedRiddles;
 
     /**
      * Inicia o gestor de enigmas, carrega os dados a partir de um ficheiro JSON

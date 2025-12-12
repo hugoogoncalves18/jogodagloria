@@ -3,7 +3,6 @@ package com.jogogloria.gui;
 import com.jogogloria.config.GameConfig;
 import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Room;
-import com.jogogloria.model.Corridor;
 import com.jogogloria.model.Player;
 import com.example.Biblioteca.lists.ArrayUnorderedList;
 import com.example.Biblioteca.iterators.Iterator;
@@ -17,10 +16,10 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 /**
- * Painel gráfico responsável por desenhar o tabuleiro do jogo
+ * Painel gráfico responsável por desenhar o tabuleiro do jogo.
  *
  * @author Hugo Gonçalves
- * @version 1.0
+ * @version 3.0
  */
 public class BoardPanel extends JPanel {
 
@@ -30,13 +29,6 @@ public class BoardPanel extends JPanel {
     private final int cols;
     private final ImageManager imageManager;
 
-    /**
-     * Cria um novo painel de jogo
-     * @param labyrinth O objeto labirinto contém a lógica do mapa
-     * @param players Lista de jogadores para renderizar
-     * @param rows Altura da grelha
-     * @param cols Largura da grelha
-     */
     public BoardPanel(Labyrinth labyrinth, ArrayUnorderedList<Player> players, int rows, int cols) {
         this.labyrinth = labyrinth;
         this.players = players;
@@ -51,10 +43,6 @@ public class BoardPanel extends JPanel {
         setBackground(Color.BLACK);
     }
 
-    /**
-     * Método principal de desenho do componente Swing
-     * @param g the <code>Graphics</code> object to protect
-     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -71,12 +59,6 @@ public class BoardPanel extends JPanel {
         drawPlayers(g2d);
     }
 
-    /**
-     * Desenha uma unica sala na posição da grelha
-     * @param g2 Contexto gráfico 2D
-     * @param x Indice da coluna
-     * @param y Indice da linha
-     */
     private void drawCell(Graphics2D g2, int x, int y) {
         Room room = labyrinth.getRoomAt(x, y);
         if (room == null) return;
@@ -92,12 +74,11 @@ public class BoardPanel extends JPanel {
         if (img != null) {
             g2.drawImage(img, px, py, size, size, null);
         } else {
-            // Se a imagem falhar, desenha um quadrado preto/vazio para não crashar
             g2.setColor(Color.DARK_GRAY);
             g2.drawRect(px, py, size, size);
         }
 
-        // --- 2. Label (S, F, ?, !) ---
+        // --- 2. Label ---
         if (room.getLabel() != null && !room.getLabel().isEmpty()) {
             g2.setColor(Color.BLACK);
             g2.setFont(g2.getFont().deriveFont(java.awt.Font.BOLD, 14f));
@@ -109,50 +90,68 @@ public class BoardPanel extends JPanel {
     }
 
     /**
-     * Desenha as paredes ou portas nas bordas da sala
+     * Desenha as paredes ou portas nas bordas da sala.
+     *
      */
     private void drawWallsAndDoors(Graphics2D g2, int x, int y, int px, int py, int size, String currentId) {
+
         // --- Parede à DIREITA ---
         if (x + 1 < cols) {
             String rightId = (x + 1) + "-" + y;
-            Corridor c = labyrinth.getCorridor(currentId, rightId);
             int wallX = px + size;
 
-            if (c == null) {
+            try {
+                // Verifica conexão no Grafo
+                boolean connected = labyrinth.graphStructure.isConnected();
+
+                if (!connected) {
+                    // Sem aresta = Parede Sólida
+                    drawWall(g2, wallX, py, wallX, py + size);
+                }
+                else if (labyrinth.isLocked(currentId, rightId)) {
+                    // Com aresta mas peso alto = Porta Trancada
+                    drawLockedDoor(g2, wallX, py, wallX, py + size);
+                }
+            } catch (Exception e) {
+                // Em caso de erro no grafo, desenha parede por segurança
                 drawWall(g2, wallX, py, wallX, py + size);
-            } else if (c.isLocked()) {
-                drawLockedDoor(g2, wallX, py, wallX, py + size);
             }
         } else {
+            // Borda do mapa
             drawWall(g2, px + size, py, px + size, py + size);
         }
 
         // --- Parede ABAIXO ---
         if (y + 1 < rows) {
             String downId = x + "-" + (y + 1);
-            Corridor c = labyrinth.getCorridor(currentId, downId);
             int wallY = py + size;
 
-            if (c == null) {
+            try {
+                boolean connected = labyrinth.graphStructure.isConnected();
+
+                if (!connected) {
+                    drawWall(g2, px, wallY, px + size, wallY);
+                }
+                else if (labyrinth.isLocked(currentId, downId)) {
+                    drawLockedDoor(g2, px, wallY, px + size, wallY);
+                }
+            } catch (Exception e) {
                 drawWall(g2, px, wallY, px + size, wallY);
-            } else if (c.isLocked()) {
-                drawLockedDoor(g2, px, wallY, px + size, wallY);
             }
         } else {
+            // Borda do mapa
             drawWall(g2, px, py + size, px + size, py + size);
         }
     }
 
-    /** Helper para desenhar uma parede sólida*/
     private void drawWall(Graphics2D g2, int x1, int y1, int x2, int y2) {
         g2.setColor(new Color(50, 50, 50));
         g2.setStroke(new BasicStroke(4));
         g2.drawLine(x1, y1, x2, y2);
     }
 
-    /** Helper para desenhar uma porta trancada*/
     private void drawLockedDoor(Graphics2D g2, int x1, int y1, int x2, int y2) {
-        g2.setColor(new Color(200, 100, 0)); // Laranja (Porta)
+        g2.setColor(new Color(200, 100, 0)); // Laranja
         g2.setStroke(new BasicStroke(8));
         g2.drawLine(x1, y1, x2, y2);
 
@@ -163,7 +162,6 @@ public class BoardPanel extends JPanel {
         g2.fillOval(midX - 3, midY - 3, 6, 6);
     }
 
-    /**Desenha os jogadores nas suas posições atuais */
     private void drawPlayers(Graphics2D g2) {
         Iterator<Player> it = players.iterator();
         int offset = 0;
@@ -173,6 +171,7 @@ public class BoardPanel extends JPanel {
 
         while (it.hasNext()) {
             Player p = it.next();
+            // Referência direta já corrigida
             Room r = p.getCurrentRoom();
 
             if (r != null) {
@@ -183,12 +182,10 @@ public class BoardPanel extends JPanel {
                 if (playerImg != null) {
                     g2.drawImage(playerImg, px, py, pSize, pSize, null);
                 } else {
-                    // Fallback simples se a imagem do jogador falhar
                     g2.setColor(p.isBot() ? Color.BLUE : Color.MAGENTA);
                     g2.fillOval(px, py, pSize, pSize);
                 }
 
-                // Nome do Jogador
                 g2.setColor(Color.WHITE);
                 g2.setFont(g2.getFont().deriveFont(10f));
                 g2.drawString(p.getName().substring(0, 1), px + pSize / 2 - 3, py - 2);

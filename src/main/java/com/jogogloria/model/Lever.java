@@ -1,68 +1,51 @@
 package com.jogogloria.model;
 
 /**
- * Representa uma alavanca
- * São mecanismos que quando são ativados por um jogador, destrancam passagens
- * Cada alavanca sabe exatamente quais as duas salas que compõem a porta que ela abre
+ * Representa uma alavanca.
+ * <p>
+ * Como removemos a classe Corridor (Pure Graph), a alavanca agora guarda
+ * referências diretas para as duas Salas (Room) cuja conexão (aresta) ela controla.
+ * </p>
  *
  * @author Hugo Gonçalves
- * @version 1.0
+ * @version 3.0
  */
 public class Lever implements Comparable<Lever> {
 
-    /** Identificador único da alavanca*/
     private final String id;
 
-    private final Corridor targetCorridor;
+    // Referências para as salas que formam a "porta"
+    private final Room roomA;
+    private final Room roomB;
 
-    /** Estado da alavanca*/
     private boolean activated;
 
     /**
-     * Cria uma nova alavanca
-     * @param id O identificador único
-     * @param targetCorridor
+     * Construtor atualizado para receber 3 argumentos.
+     * * @param id    Identificador da alavanca.
+     * @param roomA Uma das salas da conexão.
+     * @param roomB A outra sala da conexão.
      */
-    public Lever(String id,  Corridor targetCorridor) {
+    public Lever(String id, Room roomA, Room roomB) {
         this.id = id;
-        this.targetCorridor = targetCorridor;
+        this.roomA = roomA;
+        this.roomB = roomB;
         this.activated = false;
     }
 
-    public Corridor getTargetCorridor() {
-        return targetCorridor;
-    }
+    public String getId() { return id; }
 
-    /**
-     * Verifica se a alavanca já foi ativada
-     * @return true se já foi usada, false se ainda não foi usada
-     */
-    public boolean isActivated() {
-        return activated;
-    }
+    public Room getRoomA() { return roomA; }
+    public Room getRoomB() { return roomB; }
 
-    /**
-     * Define o estado da alavanca
-     * @param activated O novo estado da alavanca
-     */
-    public void setActivated(boolean activated) {
-        this.activated = activated;
-    }
+    public boolean isActivated() { return activated; }
+    public void setActivated(boolean activated) { this.activated = activated; }
 
-    /**
-     * Retorna uma representação textual da alavanca e da porta qu controla
-     * @return String descritiva
-     */
     @Override
     public String toString() {
-        return "Alavanca" + id ;
+        return "Alavanca " + id;
     }
 
-    /**
-     * Comparação de alavancas
-     * @param o A outra alavanca a comparar
-     * @return 0
-     */
     @Override
     public int compareTo(Lever o) {
         return 0;

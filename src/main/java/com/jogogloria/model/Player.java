@@ -24,9 +24,6 @@ public class Player implements Comparable<Player> {
     /** ID da sala onde o jogador começou*/
     private Room initialRoom;
 
-    /** Flag que indica se é controlado pelo computador. */
-    private final boolean isBot;
-
     /** A estratégia de IA do bot */
     private final BotStrategy botStrategy;
 
@@ -53,7 +50,6 @@ public class Player implements Comparable<Player> {
     public Player(String id, String name) {
         this.id = id;
         this.name = name;
-        this.isBot = false;
         this.botStrategy = null;
         this.logs = new ArrayUnorderedList<>();
     }
@@ -67,7 +63,6 @@ public class Player implements Comparable<Player> {
     public Player(String id, String name, BotStrategy strategy) {
         this.id = id;
         this.name = name;
-        this.isBot = true;
         this.botStrategy = strategy;
         this.logs = new ArrayUnorderedList<>();
     }
@@ -96,7 +91,7 @@ public class Player implements Comparable<Player> {
      * @return true se sim, false se naõ
      */
     public boolean isBot() {
-        return isBot;
+        return this.botStrategy != null;
     }
 
     /**

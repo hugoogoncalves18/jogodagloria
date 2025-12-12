@@ -7,7 +7,6 @@ import com.example.Biblioteca.iterators.Iterator;
 import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Player;
 import com.jogogloria.model.Room;
-import com.jogogloria.model.Corridor;
 import com.jogogloria.model.Penalty;
 import com.jogogloria.model.Boost;
 import com.jogogloria.model.Room.RoomType;
@@ -16,7 +15,7 @@ import com.jogogloria.model.Room.RoomType;
  * Motor Central do Jogo (Game Engine).
  *
  * @author Hugo Gonçalves
- * @version 2.0
+ * @version 3.0
  */
 public class GameEngine {
 
@@ -46,7 +45,6 @@ public class GameEngine {
     // --- Gestão de Jogadores ---
 
     public void addPlayer(Player player) throws EmptyCollectionException {
-        // [REFATORADO] Verifica se o objeto Room é nulo
         if (player.getCurrentRoom() == null) {
             distributePlayerSpawn(player);
         }
@@ -61,13 +59,12 @@ public class GameEngine {
         int totalEntries = entries.size();
         int targetIndex = playerSpawnIndex % totalEntries;
 
-        // Obtém o ID e depois o Objeto Room
         String spawnId = entries.get(targetIndex);
         Room spawnRoom = labyrinth.getRoom(spawnId);
 
         if (spawnRoom != null) {
-            // [REFATORADO] Usa objetos
             player.move(spawnRoom);
+            // [CORRIGIDO] Usa setInitialRoom conforme refatorização do Player
             player.setInitialPosition(spawnRoom);
             System.out.println("Spawn: " + player.getName() + " sala: " + spawnId);
         }
@@ -113,43 +110,30 @@ public class GameEngine {
 
     /**
      * Tenta mover o jogador para uma sala de destino.
-     *
+     * <p>
+     * Agora delega a validação inteiramente ao {@link Labyrinth#isValidMove},
+     * que consulta os pesos do Grafo para saber se há paredes ou portas trancadas.
+     * </p>
      */
     public boolean tryMove(Player player, Room targetRoom) throws EmptyCollectionException {
         if (!gameRunning || targetRoom == null) return false;
 
-        // Obtém a sala atual (Objeto)
         Room currentRoom = player.getCurrentRoom();
         if (currentRoom == null) return false;
 
-        // Precisamos dos IDs para validar no Labirinto (que usa grafo de strings)
         String currentId = currentRoom.getId();
         String targetId = targetRoom.getId();
 
-        // 1. Validar Vizinhança (usando IDs no grafo)
-        boolean isNeighbor = false;
-        ArrayUnorderedList<String> neighbors = labyrinth.getNeighbors(currentId);
-        Iterator<String> it = neighbors.iterator();
-        while (it.hasNext()) {
-            if (it.next().equals(targetId)) {
-                isNeighbor = true;
-                break;
-            }
-        }
-
-        if (!isNeighbor) {
-            System.out.println("Movimento inválido.");
+        // [CORREÇÃO CRÍTICA]
+        // Removemos a lógica antiga de buscar Corridor.
+        // Usamos labyrinth.isValidMove que verifica se existe aresta e se o peso permite passar.
+        if (!labyrinth.isValidMove(currentId, targetId)) {
+            // Pode ser parede (sem aresta) ou porta trancada (peso alto)
+            System.out.println("Movimento inválido (Parede ou Porta Trancada).");
             return false;
         }
 
-        // 2. Validar Corredor
-        Corridor corridor = labyrinth.getCorridor(currentId, targetId);
-        if (corridor != null && corridor.isLocked()) {
-            System.out.println("O corredor está trancado!");
-            return false;
-        }
-
-        // 3. Executar Movimento (Passando o Objeto)
+        // Executar Movimento
         player.move(targetRoom);
         player.logEvent(countTurn, "MOVE", "Moveu-se para: " + targetId);
         player.decrementMovementPoints();
@@ -162,9 +146,6 @@ public class GameEngine {
         return true;
     }
 
-    /**
-     * Verifica efeitos da sala (Objeto Room).
-     */
     private void checkRoomEffects(Player player, Room room) throws EmptyCollectionException {
         String roomId = room.getId();
 
@@ -179,8 +160,9 @@ public class GameEngine {
                 handlePenaltyEvent(player);
                 break;
             case LEVER:
-                // LeverManager já foi refatorado para ser stateless
-                leverManager.checkLever(player, room);
+                // [CORRIGIDO] Passamos o labyrinth porque o LeverManager precisa dele
+                // para alterar o peso da aresta no grafo.
+                leverManager.checkLever(player, room, labyrinth);
                 player.logEvent(countTurn, "LEVER", "Ativou a alavanca no: " + roomId);
                 break;
             case BOOST:
@@ -207,6 +189,7 @@ public class GameEngine {
 
         switch (p.getType()) {
             case RETREAT:
+                int stepsBack = -Math.abs(p.getValue());
                 applyAutoMove(victim, -Math.abs(p.getValue()));
                 break;
             case SKIP_TURN:
@@ -231,7 +214,6 @@ public class GameEngine {
         if (steps == -99) {
             Room startRoom = p.getInitialRoom();
             if (startRoom == null) {
-                // Fallback se não tiver initialRoom definido
                 startRoom = labyrinth.getRoom(labyrinth.getStartRoomId());
             }
             if (startRoom != null) {
@@ -246,7 +228,6 @@ public class GameEngine {
 
         int moves = Math.abs(steps);
 
-        // Pathfinding usa Strings
         Iterator<String> path = labyrinth.getShortestPath(p.getCurrentRoom().getId(), targetId);
 
         if (path == null || !path.hasNext()) return;
@@ -275,7 +256,6 @@ public class GameEngine {
 
         if (bot.getBotStrategy() == null || bot.getMovementPoints() <= 0) return;
 
-        // Bot decide e retorna um ID (String)
         String targetId = bot.getBotStrategy().nextMove(labyrinth, bot, bot.getMovementPoints());
 
         if (targetId != null) {

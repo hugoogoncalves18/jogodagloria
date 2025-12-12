@@ -45,7 +45,7 @@
     {
       "roomId": "2-1",
       "id": "AlavancaOeste",
-      "doorRoomA": "9.8",
+      "doorRoomA": "9-8",
       "doorRoomB": "9-9"
     },
     {
@@ -57,8 +57,8 @@
     {
       "roomId": "2-18",
       "id": "AlavancaInferior",
-      "roomDoorA": "9-10",
-      "roomDoorB": "9-9"
+      "doorRoomA": "9-10",
+      "doorRoomB": "9-9"
     }
   ]
 }
