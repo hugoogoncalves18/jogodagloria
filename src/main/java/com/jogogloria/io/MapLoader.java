@@ -4,6 +4,7 @@ import com.jogogloria.model.Labyrinth;
 import com.jogogloria.model.Lever;
 import com.jogogloria.model.Room;
 import com.jogogloria.model.Room.RoomType;
+import com.example.Biblioteca.iterators.Iterator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,7 +14,7 @@ import java.io.IOException;
  * Responsável pela construção do labirinto a partir de ficheiro de config JSON.
  *
  * @author Hugo Gonçalves
- * @version 3.0
+ * @version 4.0
  */
 public class MapLoader {
 
@@ -46,6 +47,36 @@ public class MapLoader {
         applyLevers(jsonContent, labyrinth);
 
         return labyrinth;
+    }
+
+    private static void validateMapConectivity(Labyrinth labyrinth) {
+        String start = labyrinth.getStartRoomId();
+        String treasure = labyrinth.getTreasureRoom();
+
+        if (start == null || treasure == null) {
+            System.out.println("Mapa sem fim ou inicio");
+            return;
+        }
+        boolean foundTreasure = false;
+
+        try{
+            Iterator<String> it = labyrinth.iteratorBFS(start);
+            while (it.hasNext()) {
+                String room = it.next();
+                if (room.equals(treasure)) {
+                    foundTreasure = true;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao validar" + e.getMessage());
+        }
+
+        if (!foundTreasure) {
+            throw new RuntimeException("Mapa inválido, o tesouro é inalcançável");
+        } else {
+            System.out.println("Validação do Mapa concluida com sucesso");
+        }
     }
 
     private static String readJsonFile(String filePath) {
